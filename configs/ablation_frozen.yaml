@@ -1,0 +1,43 @@
+# =============================================================================
+# configs/ablation_frozen.yaml
+# Ablation: permanently frozen SAM2 encoder (no fine-tuning).
+#
+# Purpose: quantify how much performance comes from encoder fine-tuning.
+# The encoder is frozen for the entire run and never unfrozen.
+# All other settings are identical to base.yaml.
+# =============================================================================
+
+_base_: base.yaml
+
+experiment:
+  name:        sam2_lung_seg_frozen
+  description: >
+    Ablation — SAM2 encoder permanently frozen.
+    Only the mask decoder (and positional embeddings) are trained.
+    Isolates the contribution of encoder fine-tuning on CT imagery.
+  tags:
+    - sam2
+    - lung-nodule
+    - ablation
+    - frozen-encoder
+
+# ── Model overrides ───────────────────────────────────────────────────────────
+model:
+  encoder_frozen:         true    # ← key change: stays frozen throughout
+  encoder_unfreeze_epoch: 999999  # effectively never unfreeze
+
+# Keep TC loss active so only the frozen-encoder variable changes
+loss:
+  lambda_bce:       0.5
+  lambda_tc:        0.3
+  consistency_mode: l2
+  warmup_epochs:    5
+  focal_alpha:      0.75
+  focal_gamma:      2.0
+
+# ── Optimiser note ────────────────────────────────────────────────────────────
+# With a frozen encoder, fewer parameters are optimised, so a slightly
+# higher LR is used to compensate for the reduced gradient signal.
+optimizer:
+  lr:           2.0e-4    # ← slightly higher than base (1e-4)
+  weight_decay: 1.0e-2

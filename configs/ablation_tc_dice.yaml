@@ -1,0 +1,30 @@
+# =============================================================================
+# configs/ablation_tc_dice.yaml
+# Ablation: temporal consistency loss with Dice metric instead of L2.
+#
+# Purpose: compare L2 vs. soft-Dice as the inter-slice consistency objective.
+# All other settings are identical to base.yaml.
+# =============================================================================
+
+_base_: base.yaml
+
+experiment:
+  name:        sam2_lung_seg_tc_dice
+  description: >
+    Ablation — temporal consistency using Dice metric (not L2).
+    Tests whether enforcing slice-to-slice consistency via a volumetric
+    overlap measure outperforms L2 pixel distance.
+  tags:
+    - sam2
+    - lung-nodule
+    - ablation
+    - tc-dice
+
+# ── Loss overrides ────────────────────────────────────────────────────────────
+loss:
+  lambda_bce:       0.5
+  lambda_tc:        0.3       # same weight as base
+  consistency_mode: dice      # ← key change: Dice-based TC instead of L2
+  warmup_epochs:    5
+  focal_alpha:      0.75
+  focal_gamma:      2.0

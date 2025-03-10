@@ -1,0 +1,129 @@
+# =============================================================================
+# configs/base.yaml
+# Base configuration for SAM2 Lung Nodule Segmentation.
+#
+# All ablation configs inherit from / override these values.
+# Keys follow Python-style naming and are loaded by training/train.py
+# via OmegaConf / PyYAML.
+# =============================================================================
+
+# ── Experiment metadata ───────────────────────────────────────────────────────
+experiment:
+  name:        sam2_lung_seg_base
+  description: >
+    Full model: fine-tuned SAM2 image encoder (unfrozen after epoch 10),
+    cross-attention mask decoder, temporal consistency loss (L2), MC Dropout.
+  tags:
+    - sam2
+    - lung-nodule
+    - uncertainty-aware
+    - temporal-consistency
+  seed: 42
+
+# ── Data ─────────────────────────────────────────────────────────────────────
+data:
+  luna_dir:       data/luna16
+  processed_dir:  data/processed
+  subsets_train:  [0, 1, 2, 3, 4, 5, 6]   # 70% (7/10 subsets)
+  subsets_val:    [7, 8]                   # 20%
+  subsets_test:   [9]                      # 10%
+
+  # Patch extraction
+  patch_size:     96          # H×W of 2D slice crops (px)
+  stride:         48          # sliding-window stride for patch extraction
+  plane:          axial       # axial | coronal | sagittal
+
+  # HU windowing
+  hu_min:        -1000.0      # Air
+  hu_max:         400.0       # Soft tissue / bone boundary
+
+  # DataLoader
+  batch_size:     16
+  num_workers:    4
+  pin_memory:     true
+  prefetch_factor: 2
+
+  # Augmentation (training only)
+  augmentation:
+    random_flip_prob:    0.5
+    random_rotate_deg:   15
+    brightness_delta:    0.1
+    contrast_range:      [0.8, 1.2]
+    gaussian_noise_std:  0.01
+
+# ── Model ─────────────────────────────────────────────────────────────────────
+model:
+  name:            sam2_lung_seg
+  sam2_checkpoint: null          # path to pre-trained SAM2 .pt; null → FallbackEncoder
+  sam2_config:     null          # path to SAM2 HydraConf cfg; null → FallbackEncoder
+
+  # Architecture
+  embed_dim:       256
+  num_heads:       8
+  attn_dropout:    0.1
+  proj_dropout:    0.1
+  mlp_ratio:       4.0
+  num_output_masks: 1
+
+  # Encoder training strategy
+  encoder_frozen:          true    # Start frozen; unfreeze after warmup
+  encoder_unfreeze_epoch:  10      # Epoch at which encoder is unfrozen
+
+# ── Loss ──────────────────────────────────────────────────────────────────────
+loss:
+  lambda_bce:          0.5      # Weight on focal-BCE component
+  lambda_tc:           0.3      # Weight on temporal consistency component
+  consistency_mode:    l2       # l2 | dice
+  warmup_epochs:       5        # Epochs before TC loss is activated
+  focal_alpha:         0.75     # Focal-BCE alpha (down-weight easy negatives)
+  focal_gamma:         2.0      # Focal-BCE gamma
+
+# ── Training ──────────────────────────────────────────────────────────────────
+training:
+  epochs:              100
+  amp:                 true     # automatic mixed precision
+  gradient_clip_norm:  1.0
+  log_interval:        50       # batches between console log lines
+  eval_interval:       1        # epochs between validation runs
+  save_top_k:          3        # keep best-k checkpoints
+  early_stopping:
+    patience:          15
+    monitor:           val/dice
+    mode:              max
+
+# ── Optimiser ─────────────────────────────────────────────────────────────────
+optimizer:
+  name:            adamw       # adam | adamw | sgd
+  lr:              1.0e-4
+  weight_decay:    1.0e-2
+  betas:           [0.9, 0.999]
+  eps:             1.0e-8
+
+# ── Learning-rate scheduler ──────────────────────────────────────────────────
+scheduler:
+  name:            cosine          # cosine | plateau | step | onecycle
+  warmup_steps:    500             # linear warm-up for this many optimiser steps
+  min_lr:          1.0e-6
+  # plateau-specific
+  reduce_factor:   0.5
+  reduce_patience: 7
+
+# ── MC Dropout inference ──────────────────────────────────────────────────────
+mc_dropout:
+  n_samples:       25
+  mc_batch_size:    4
+  sigmoid:         true
+
+# ── Evaluation ────────────────────────────────────────────────────────────────
+evaluation:
+  threshold:       0.5
+  compute_hd95:    true
+  compute_rad_agreement: false   # requires radiologist CSV
+
+# ── Logging ───────────────────────────────────────────────────────────────────
+logging:
+  backend:         tensorboard   # tensorboard | wandb | none
+  wandb_project:   sam2-lung-nodule
+  wandb_entity:    null          # set to your W&B username / team
+  log_images:      true          # log segmentation overlays
+  log_images_interval: 5         # every N epochs

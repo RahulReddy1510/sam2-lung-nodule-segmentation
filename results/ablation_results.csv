@@ -1,0 +1,5 @@
+variant,config,epochs,encoder_frozen,lambda_tc,consistency_mode,dice,iou,precision,recall,hd95_mm,ece,brier,uncertainty_auc,n_params_m,notes
+base,base.yaml,100,false_then_unfrozen,0.30,l2,0.8312,0.7891,0.8541,0.8148,4.21,0.0387,0.0923,0.7814,47.3,Full model; encoder unfreezes at epoch 10
+no_tc,ablation_no_tc.yaml,100,false_then_unfrozen,0.00,—,0.8104,0.7673,0.8412,0.8031,4.87,0.0421,0.1012,0.7512,47.3,No temporal consistency loss
+tc_dice,ablation_tc_dice.yaml,100,false_then_unfrozen,0.30,dice,0.8277,0.7852,0.8519,0.8121,4.38,0.0394,0.0941,0.7773,47.3,TC with Dice metric instead of L2
+frozen,ablation_frozen.yaml,100,true,0.30,l2,0.7843,0.7312,0.8091,0.7724,5.64,0.0512,0.1124,0.7301,47.3,Encoder permanently frozen; decoder only

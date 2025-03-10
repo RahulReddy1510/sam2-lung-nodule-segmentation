@@ -1,0 +1,139 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+conda-env/
+
+# PyTest
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+nosetests.xml
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# TensorBoard logs
+runs/
+logs/
+tensorboard_logs/
+
+# Model checkpoints and large files
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+*.h5
+*.pkl
+*.bin
+
+# Data directories (LUNA16 data is not committed — see data/README.md)
+data/raw/
+data/preprocessed/
+/data/LUNA16/
+*.mhd
+*.zraw
+*.mha
+*.nii
+*.nii.gz
+*.dcm
+
+# Generated results (reproducible via scripts)
+results/figures/
+results/plots/
+results/reports/
+# Keep: results/ablation_results.csv and results/README.md
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Flake8
+.flake8
+
+# Secrets and environment variables
+.env.local
+.env.production
+*.key
+credentials.json
+
+# OS-specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.orig
+
+# SAM2 model weights (download separately, not committed)
+sam2_hiera_*.pt
+sam2_hiera_*.pth
+
+# Outputs from preprocessing scripts
+*_image.npy
+*_mask.npy
+# Exception: small synthetic test patches
+!tests/fixtures/*.npy
+
+# Profiling
+*.prof
+*.lprof

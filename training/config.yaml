@@ -1,0 +1,160 @@
+# ============================================================
+# SAM2 Lung Nodule Segmentation — Training Configuration
+# ============================================================
+# Compatible with training/train.py via OmegaConf / plain PyYAML.
+# Override any field from the CLI: python training/train.py lr=5e-5
+# ============================================================
+
+# ── Experiment identity ────────────────────────────────────────────────────
+experiment:
+  name: sam2_lung_seg_v1
+  run_id: null               # filled automatically (ISO timestamp) if null
+  output_dir: runs/          # base directory for all run artefacts
+  seed: 42
+  device: cuda               # cuda | cpu | mps
+  mixed_precision: true      # torch.cuda.amp (FP16)
+  compile_model: false       # torch.compile — requires PyTorch ≥ 2.0
+
+# ── Data ──────────────────────────────────────────────────────────────────
+data:
+  # Set to SYNTHETIC to run without real LUNA16 data (tests / CI)
+  data_dir: data/processed/
+  batch_size: 16             # slice-level batches
+  num_workers: 4
+  pin_memory: true
+  prefetch_factor: 2
+
+  # Augmentation — applied to training slices only
+  augmentation:
+    augment: true
+    random_flip_prob: 0.5
+    vertical_flip_prob: 0.3
+    random_rotation_degrees: 15.0
+    random_zoom_range: [0.85, 1.15]
+    random_brightness: 0.10
+    gaussian_noise_std: 0.02
+
+# ── Model ─────────────────────────────────────────────────────────────────
+model:
+  name: sam2_lung_seg        # must match a key in ModelRegistry
+  embed_dim: 256
+  num_heads: 8
+  attn_dropout: 0.10
+  proj_dropout: 0.10
+  # encoder_frozen_epochs: encoder stays frozen for first N epochs, then unfrozen
+  encoder_frozen: true
+  encoder_frozen_epochs: 5
+
+  # SAM2 checkpoint — set to null to use FallbackEncoder
+  sam2_checkpoint: null
+  sam2_config: sam2_hiera_large.yaml
+
+# ── Optimiser ─────────────────────────────────────────────────────────────
+optimizer:
+  name: AdamW               # AdamW | SGD
+  lr: 1.0e-4                # peak learning rate (after warmup)
+  weight_decay: 1.0e-4
+  betas: [0.9, 0.999]       # (ignored for SGD)
+  eps: 1.0e-8
+  clip_grad_norm: 1.0       # max gradient norm; null to disable
+
+  # Separate LR for encoder (lower rate during unfreezing)
+  encoder_lr_multiplier: 0.1
+
+# ── LR Scheduler ──────────────────────────────────────────────────────────
+scheduler:
+  name: cosine_with_warmup   # cosine_with_warmup | step | plateau | poly
+  warmup_epochs: 5
+  warmup_start_lr: 1.0e-7
+  T_max: 50                  # cosine full-cycle length (epochs)
+  eta_min: 1.0e-7            # floor for cosine annealing
+
+  # StepLR (only used when name=step)
+  step_size: 15
+  gamma: 0.5
+
+  # ReduceLROnPlateau (only used when name=plateau)
+  plateau_mode: min
+  plateau_patience: 5
+  plateau_factor: 0.5
+
+  # PolynomialLR (only used when name=poly)
+  poly_power: 0.9
+  poly_total_iters: 50       # epochs
+
+# ── Loss function ─────────────────────────────────────────────────────────
+loss:
+  lambda_bce: 0.5
+  lambda_tc: 0.3             # temporal consistency weight
+  consistency_mode: l2       # l2 | dice
+  warmup_epochs: 5           # TC loss activates after this epoch
+  focal_alpha: 0.75
+  focal_gamma: 2.0
+
+# ── Monte Carlo Dropout ────────────────────────────────────────────────────
+mc_dropout:
+  n_samples: 25              # stochastic forward passes at inference
+  mc_batch_size: 5           # samples per CUDA kernel launch
+  threshold: 0.5             # binary segmentation threshold
+
+# ── Training loop ─────────────────────────────────────────────────────────
+training:
+  epochs: 50
+  val_interval: 1            # validate every N epochs
+  log_interval: 10           # log metrics every N batches
+  save_interval: 5           # save checkpoint every N epochs
+  early_stopping_patience: 10
+  early_stopping_metric: val_dice
+  early_stopping_mode: max
+
+  # Checkpoint
+  resume_from: null          # path to checkpoint; null = train from scratch
+  save_best_only: false      # also save periodic checkpoints if false
+
+# ── Logging ───────────────────────────────────────────────────────────────
+logging:
+  use_wandb: true
+  wandb_project: sam2-lung-nodule-seg
+  wandb_entity: null         # your W&B username / team (null = default)
+  wandb_tags: [sam2, luna16, mc_dropout, temporal_consistency]
+  log_images_every_n_epochs: 5
+  log_uncertainty_maps: true
+
+  # TensorBoard (always enabled in addition to W&B)
+  tensorboard: true
+
+# ── Evaluation ────────────────────────────────────────────────────────────
+evaluation:
+  # Reported at each validation epoch
+  metrics: [dice, iou, precision, recall, uncertainty_auc]
+  # MC Dropout passes used during validation (cheaper than training)
+  mc_samples_val: 10
+
+# ── Ablation profiles ────────────────────────────────────────────────────
+# Override the top-level keys by selecting a profile:
+#   python training/train.py --profile tc_disabled
+ablation_profiles:
+  baseline:
+    loss:
+      lambda_tc: 0.0
+    experiment:
+      name: ablation_baseline
+
+  tc_disabled:
+    loss:
+      lambda_tc: 0.0
+    experiment:
+      name: ablation_no_tc
+
+  mc_disabled:
+    mc_dropout:
+      n_samples: 1
+    experiment:
+      name: ablation_no_mc
+
+  enc_unfrozen:
+    model:
+      encoder_frozen: false
+      encoder_frozen_epochs: 0
+    experiment:
+      name: ablation_enc_unfrozen

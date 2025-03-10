@@ -1,0 +1,31 @@
+# =============================================================================
+# configs/ablation_no_tc.yaml
+# Ablation: disable temporal consistency loss entirely.
+#
+# Purpose: isolate the contribution of the TC loss by setting lambda_tc = 0.
+# All other settings are identical to base.yaml.
+# =============================================================================
+
+# Inherit base config — only keys listed below are overridden.
+_base_: base.yaml
+
+experiment:
+  name:        sam2_lung_seg_no_tc
+  description: >
+    Ablation — no temporal consistency loss (lambda_tc = 0).
+    Isolates the contribution of the TC regularisation term.
+    Encoder still unfreezes at epoch 10.
+  tags:
+    - sam2
+    - lung-nodule
+    - ablation
+    - no-temporal-consistency
+
+# ── Loss overrides ────────────────────────────────────────────────────────────
+loss:
+  lambda_bce:       0.5       # unchanged
+  lambda_tc:        0.0       # ← key change: TC loss disabled
+  consistency_mode: l2        # irrelevant (lambda_tc = 0), kept for completeness
+  warmup_epochs:    5
+  focal_alpha:      0.75
+  focal_gamma:      2.0

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LungNoduleSegWidget</class>
+ <widget class="QWidget" name="LungNoduleSegWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Lung Nodule Seg (SAM2)</string>
+  </property>
+
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="margin">
+    <number>8</number>
+   </property>
+   <property name="spacing">
+    <number>6</number>
+   </property>
+
+   <!-- ══════════════════════════════════════════════════
+        Collapsible: Inputs
+        ══════════════════════════════════════════════════ -->
+   <item>
+    <widget class="ctkCollapsibleButton" name="inputsCollapsibleButton">
+     <property name="text">
+      <string>Inputs</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_inputs">
+      <property name="labelAlignment">
+       <set>Qt::AlignRight|Qt::AlignVCenter</set>
+      </property>
+
+      <!-- Input Volume selector -->
+      <item row="0" column="0">
+       <widget class="QLabel" name="inputVolumeLabel">
+        <property name="text"><string>CT Volume:</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="qMRMLNodeComboBox" name="inputVolumeSelector">
+        <property name="nodeTypes">
+         <stringlist>
+          <string>vtkMRMLScalarVolumeNode</string>
+         </stringlist>
+        </property>
+        <property name="selectNodeUponCreation">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="removeEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="noneEnabled">
+         <bool>false</bool>
+        </property>
+        <property name="showHidden">
+         <bool>false</bool>
+        </property>
+        <property name="showChildNodeTypes">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Select the input CT scalar volume</string>
+        </property>
+       </widget>
+      </item>
+
+      <!-- Output Segmentation selector -->
+      <item row="1" column="0">
+       <widget class="QLabel" name="outputSegLabel">
+        <property name="text"><string>Output Labelmap:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="qMRMLNodeComboBox" name="outputSegSelector">
+        <property name="nodeTypes">
+         <stringlist>
+          <string>vtkMRMLLabelMapVolumeNode</string>
+         </stringlist>
+        </property>
+        <property name="selectNodeUponCreation">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="removeEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="noneEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="showHidden">
+         <bool>false</bool>
+        </property>
+        <property name="showChildNodeTypes">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Segmentation labelmap output. Created automatically if empty.</string>
+        </property>
+       </widget>
+      </item>
+
+      <!-- Uncertainty Volume selector -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="uncertaintyVolLabel">
+        <property name="text"><string>Uncertainty Volume:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="qMRMLNodeComboBox" name="uncertaintyVolSelector">
+        <property name="nodeTypes">
+         <stringlist>
+          <string>vtkMRMLScalarVolumeNode</string>
+         </stringlist>
+        </property>
+        <property name="selectNodeUponCreation">
+         <bool>true</bool>
+        </property>
+        <property name="addEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="removeEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="noneEnabled">
+         <bool>true</bool>
+        </property>
+        <property name="showHidden">
+         <bool>false</bool>
+        </property>
+        <property name="showChildNodeTypes">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Volume that will hold per-voxel MC Dropout uncertainty (variance). Created automatically if empty.</string>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <!-- ══════════════════════════════════════════════════
+        Collapsible: Model Settings
+        ══════════════════════════════════════════════════ -->
+   <item>
+    <widget class="ctkCollapsibleButton" name="modelCollapsibleButton">
+     <property name="text">
+      <string>Model Settings</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_model">
+
+      <!-- Checkpoint path -->
+      <item row="0" column="0">
+       <widget class="QLabel" name="checkpointLabel">
+        <property name="text"><string>Checkpoint (.pt):</string></property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="ctkPathLineEdit" name="checkpointPathEdit">
+        <property name="filters">
+         <set>ctkPathLineEdit::Files</set>
+        </property>
+        <property name="nameFilters">
+         <stringlist>
+          <string>PyTorch checkpoints (*.pt *.pth)</string>
+         </stringlist>
+        </property>
+        <property name="toolTip">
+         <string>Path to trained SAM2LungSegmentor checkpoint (.pt)</string>
+        </property>
+       </widget>
+      </item>
+
+      <!-- MC Dropout samples -->
+      <item row="1" column="0">
+       <widget class="QLabel" name="mcSamplesLabel">
+        <property name="text"><string>MC Dropout Samples:</string></property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="mcSamplesSpinBox">
+        <property name="minimum"><number>1</number></property>
+        <property name="maximum"><number>100</number></property>
+        <property name="value"><number>25</number></property>
+        <property name="toolTip">
+         <string>Number of stochastic forward passes for uncertainty estimation (more = slower but more accurate uncertainty)</string>
+        </property>
+       </widget>
+      </item>
+
+      <!-- Segmentation threshold -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="thresholdLabel">
+        <property name="text"><string>Threshold:</string></property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDoubleSpinBox" name="thresholdSpinBox">
+        <property name="minimum"><double>0.01</double></property>
+        <property name="maximum"><double>0.99</double></property>
+        <property name="singleStep"><double>0.05</double></property>
+        <property name="value"><double>0.5</double></property>
+        <property name="toolTip">
+         <string>Probability threshold for binary segmentation (default 0.5)</string>
+        </property>
+       </widget>
+      </item>
+
+      <!-- Use GPU checkbox -->
+      <item row="3" column="0">
+       <widget class="QLabel" name="gpuLabel">
+        <property name="text"><string>Use GPU (CUDA):</string></property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QCheckBox" name="useGpuCheckBox">
+        <property name="checked"><bool>true</bool></property>
+        <property name="toolTip">
+         <string>Use CUDA GPU if available (strongly recommended for speed)</string>
+        </property>
+       </widget>
+      </item>
+
+     </layout>
+    </widget>
+   </item>
+
+   <!-- ══════════════════════════════════════════════════
+        Run button + progress bar
+        ══════════════════════════════════════════════════ -->
+   <item>
+    <widget class="QPushButton" name="runSegmentationButton">
+     <property name="text"><string>▶  Run Segmentation</string></property>
+     <property name="toolTip">
+      <string>Run SAM2 MC Dropout segmentation on the selected CT volume</string>
+     </property>
+     <property name="styleSheet">
+      <string>
+       QPushButton {
+         background-color: #2d7dd2;
+         color: white;
+         font-weight: bold;
+         font-size: 13px;
+         padding: 8px;
+         border-radius: 4px;
+       }
+       QPushButton:hover { background-color: #1a5fa6; }
+       QPushButton:pressed { background-color: #0e3d6b; }
+       QPushButton:disabled { background-color: #888; }
+      </string>
+     </property>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value"><number>0</number></property>
+     <property name="minimum"><number>0</number></property>
+     <property name="maximum"><number>100</number></property>
+     <property name="visible"><bool>false</bool></property>
+     <property name="toolTip">
+      <string>Slice processing progress</string>
+     </property>
+    </widget>
+   </item>
+
+   <!-- ══════════════════════════════════════════════════
+        Collapsible: Results
+        ══════════════════════════════════════════════════ -->
+   <item>
+    <widget class="ctkCollapsibleButton" name="resultsCollapsibleButton">
+     <property name="text">
+      <string>Results</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_results">
+      <item>
+       <widget class="QPlainTextEdit" name="resultsTextEdit">
+        <property name="readOnly"><bool>true</bool></property>
+        <property name="minimumHeight"><number>140</number></property>
+        <property name="placeholderText">
+         <string>Results will appear here after segmentation completes…</string>
+        </property>
+        <property name="styleSheet">
+         <string>
+          QPlainTextEdit {
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            border: 1px solid #444;
+            border-radius: 3px;
+          }
+         </string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- Spacer -->
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0">
+      <size><width>20</width><height>40</height></size>
+     </property>
+    </spacer>
+   </item>
+
+  </layout>
+ </widget>
+
+ <!-- Custom widget declarations for Slicer CTK widgets -->
+ <customwidgets>
+  <customwidget>
+   <class>ctkCollapsibleButton</class>
+   <extends>QWidget</extends>
+   <header>ctkCollapsibleButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>qMRMLNodeComboBox</class>
+   <extends>QWidget</extends>
+   <header>qMRMLNodeComboBox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ctkPathLineEdit</class>
+   <extends>QWidget</extends>
+   <header>ctkPathLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+
+ <resources/>
+ <connections/>
+</ui>
