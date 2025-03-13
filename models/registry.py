@@ -82,6 +82,7 @@ class ModelRegistry:
             def build_my_model(**kwargs):
                 return build_model(embed_dim=128, **kwargs)
         """
+
         def decorator(fn: Callable) -> Callable:
             if name in cls._registry:
                 raise KeyError(
@@ -91,6 +92,7 @@ class ModelRegistry:
             cls._registry[name] = fn
             logger.debug("ModelRegistry: registered '%s' → %s", name, fn.__name__)
             return fn
+
         return decorator
 
     @classmethod
@@ -149,7 +151,9 @@ class ModelRegistry:
         if name in cls._registry:
             logger.warning("ModelRegistry: overwriting existing entry '%s'", name)
         cls._registry[name] = _factory
-        logger.info("ModelRegistry: registered config '%s'  embed_dim=%d", name, embed_dim)
+        logger.info(
+            "ModelRegistry: registered config '%s'  embed_dim=%d", name, embed_dim
+        )
 
     @classmethod
     def unregister(cls, name: str) -> None:
@@ -197,8 +201,7 @@ class ModelRegistry:
         """
         if name not in cls._registry:
             raise KeyError(
-                f"ModelRegistry: '{name}' not registered. "
-                f"Available: {cls.list()}"
+                f"ModelRegistry: '{name}' not registered. " f"Available: {cls.list()}"
             )
         factory = cls._registry[name]
         logger.info("ModelRegistry: building '%s'", name)

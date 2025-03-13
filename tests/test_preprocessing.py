@@ -8,11 +8,11 @@ All tests use SyntheticNoduleDataset (no LUNA16 required).
 Run:
     pytest tests/test_preprocessing.py -v
 """
-import pytest
+
 import numpy as np
+import pytest
 import torch
 from torch.utils.data import DataLoader
-
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -21,6 +21,7 @@ from torch.utils.data import DataLoader
 def train_dataset():
     """Synthetic training dataset instance, module-scoped for speed."""
     from data.dataset import build_dataset
+
     return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
 
 
@@ -28,6 +29,7 @@ def train_dataset():
 def augmented_dataset():
     """Synthetic training dataset with augmentations enabled."""
     from data.dataset import build_dataset
+
     return build_dataset("SYNTHETIC", split="train", mode="slice", augment=True)
 
 
@@ -35,6 +37,7 @@ def augmented_dataset():
 def augmentation_pipeline():
     """Augmentation pipeline fixture."""
     from data.augmentation import get_augmentation_pipeline
+
     cfg = {
         "augment": True,
         "random_flip_prob": 0.5,
@@ -59,9 +62,10 @@ class TestDatasetLoading:
     def test_dataset_splits_non_overlapping(self):
         """Train / val / test splits should be strictly non-overlapping."""
         from data.dataset import build_dataset
+
         train = build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
-        val   = build_dataset("SYNTHETIC", split="val",   mode="slice", augment=False)
-        test  = build_dataset("SYNTHETIC", split="test",  mode="slice", augment=False)
+        val = build_dataset("SYNTHETIC", split="val", mode="slice", augment=False)
+        test = build_dataset("SYNTHETIC", split="test", mode="slice", augment=False)
         # Total samples
         total = len(train) + len(val) + len(test)
         assert total > 0
@@ -86,16 +90,16 @@ class TestDatasetLoading:
         """Mask and image must have the same spatial dimensions."""
         sample = train_dataset[0]
         img, msk = sample["image"], sample["mask"]
-        assert img.shape[1:] == msk.shape[1:], (
-            f"Image {img.shape} and mask {msk.shape} spatial dims differ"
-        )
+        assert (
+            img.shape[1:] == msk.shape[1:]
+        ), f"Image {img.shape} and mask {msk.shape} spatial dims differ"
 
     def test_image_dtype_float(self, train_dataset):
         """Image tensor must be float (float32)."""
         sample = train_dataset[0]
-        assert sample["image"].dtype == torch.float32, (
-            f"Expected float32, got {sample['image'].dtype}"
-        )
+        assert (
+            sample["image"].dtype == torch.float32
+        ), f"Expected float32, got {sample['image'].dtype}"
 
     def test_mask_dtype_float(self, train_dataset):
         """Mask tensor must be float for BCE loss compatibility."""
@@ -115,9 +119,9 @@ class TestDatasetLoading:
             msk = train_dataset[i]["mask"].numpy()
             unique = np.unique(np.round(msk, decimals=3))
             for u in unique:
-                assert u in (0.0, 1.0) or (0.0 <= u <= 1.0), (
-                    f"Unexpected mask value {u}"
-                )
+                assert u in (0.0, 1.0) or (
+                    0.0 <= u <= 1.0
+                ), f"Unexpected mask value {u}"
 
 
 # ── DataLoader tests ──────────────────────────────────────────────────────────
@@ -156,7 +160,9 @@ class TestDataLoader:
 
 
 # Skip entire HU windowing class if SimpleITK (used internally by luna16_preprocessing) is absent
-_sitk = pytest.importorskip("SimpleITK", reason="SimpleITK not installed — skipping HU windowing tests")
+_sitk = pytest.importorskip(
+    "SimpleITK", reason="SimpleITK not installed — skipping HU windowing tests"
+)
 
 
 @pytest.mark.skipif(
@@ -169,6 +175,7 @@ class TestHUWindowing:
     def test_windowing_clip_min(self):
         """Values below hu_min should clip to 0."""
         from data.luna16_preprocessing import apply_hu_window
+
         arr = np.array([-2000.0, -1000.0, 0.0, 400.0, 1000.0], dtype=np.float32)
         out = apply_hu_window(arr, hu_min=-1000.0, hu_max=400.0)
         assert out[0] == pytest.approx(0.0, abs=1e-5), "Below min → 0"
@@ -177,6 +184,7 @@ class TestHUWindowing:
     def test_windowing_clip_max(self):
         """Values above hu_max should clip to 1."""
         from data.luna16_preprocessing import apply_hu_window
+
         arr = np.array([400.0, 1000.0], dtype=np.float32)
         out = apply_hu_window(arr, hu_min=-1000.0, hu_max=400.0)
         assert out[0] == pytest.approx(1.0, abs=1e-5)
@@ -185,6 +193,7 @@ class TestHUWindowing:
     def test_windowing_midpoint(self):
         """HU=0 should map to 1000/1400 ≈ 0.714."""
         from data.luna16_preprocessing import apply_hu_window
+
         arr = np.array([0.0], dtype=np.float32)
         out = apply_hu_window(arr, hu_min=-1000.0, hu_max=400.0)
         expected = (0.0 - (-1000.0)) / (400.0 - (-1000.0))
@@ -193,6 +202,7 @@ class TestHUWindowing:
     def test_windowing_output_range(self):
         """Output should always be in [0, 1]."""
         from data.luna16_preprocessing import apply_hu_window
+
         rng = np.random.default_rng(42)
         arr = rng.uniform(-2000, 2000, 1000).astype(np.float32)
         out = apply_hu_window(arr)
@@ -238,10 +248,7 @@ class TestAugmentation:
         """Two augmentation passes of the same input should differ."""
         img = torch.rand(1, 96, 96)
         msk = torch.zeros(1, 96, 96)
-        out1 = augmentation_pipeline({"image": img.clone(), "mask": msk.clone()})
-        out2 = augmentation_pipeline({"image": img.clone(), "mask": msk.clone()})
         # They might be identical by chance; run multiple times to be sure
-        is_same = torch.allclose(out1["image"], out2["image"])
         # Run 5 times: extremely unlikely all 5 produce same output
         diffs = 0
         for _ in range(5):
@@ -249,7 +256,9 @@ class TestAugmentation:
             o2 = augmentation_pipeline({"image": img.clone(), "mask": msk.clone()})
             if not torch.allclose(o1["image"], o2["image"]):
                 diffs += 1
-        assert diffs > 0, "Augmentation produced identical outputs every time — check RNG"
+        assert (
+            diffs > 0
+        ), "Augmentation produced identical outputs every time — check RNG"
 
     def test_augmented_dataset_len_unchanged(self, augmented_dataset, train_dataset):
         """Augmented dataset must have same length as non-augmented."""

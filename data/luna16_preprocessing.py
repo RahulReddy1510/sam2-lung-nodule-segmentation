@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import random
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
@@ -122,8 +121,7 @@ def resample_volume(
     orig_size: Tuple[int, ...] = sitk_img.GetSize()
 
     new_size: List[int] = [
-        int(round(orig_size[i] * orig_spacing[i] / target_spacing[i]))
-        for i in range(3)
+        int(round(orig_size[i] * orig_spacing[i] / target_spacing[i])) for i in range(3)
     ]
 
     resampler = sitk.ResampleImageFilter()
@@ -261,9 +259,7 @@ def create_nodule_mask(
     zz, yy, xx = np.ogrid[z0:z1, y0:y1, x0:x1]
 
     # Ellipsoidal distance test (accounts for anisotropic spacing)
-    dist_sq = (
-        ((zz - cz) * sz) ** 2 + ((yy - cy) * sy) ** 2 + ((xx - cx) * sx) ** 2
-    )
+    dist_sq = ((zz - cz) * sz) ** 2 + ((yy - cy) * sy) ** 2 + ((xx - cx) * sx) ** 2
     inside = dist_sq <= radius_mm**2
     mask[z0:z1, y0:y1, x0:x1][inside] = 1
 
@@ -471,8 +467,14 @@ def _process_one_study(
 
             radius_mm = diameter_mm / 2.0
             # Annotations are in (x, y, z) world coordinates
-            world_xyz = (float(row["coordZ"]), float(row["coordY"]), float(row["coordX"]))
-            center_voxel = world_to_voxel(world_xyz, origin_resampled, spacing_resampled)
+            world_xyz = (
+                float(row["coordZ"]),
+                float(row["coordY"]),
+                float(row["coordX"]),
+            )
+            center_voxel = world_to_voxel(
+                world_xyz, origin_resampled, spacing_resampled
+            )
 
             # Safety: clamp center to valid range
             center_voxel = tuple(
@@ -568,7 +570,9 @@ def process_dataset(
 
     # Split at study level
     all_uids: List[str] = annotations["seriesuid"].unique().tolist()
-    splits = get_train_val_test_splits(all_uids, train=train_frac, val=val_frac, seed=seed)
+    splits = get_train_val_test_splits(
+        all_uids, train=train_frac, val=val_frac, seed=seed
+    )
     logger.info(
         "Split: %d train | %d val | %d test studies",
         len(splits["train"]),
@@ -587,8 +591,7 @@ def process_dataset(
         logger.info("Processing %s split (%d studies)...", split_name, len(uid_list))
 
         uid_to_rows = {
-            uid: annotations[annotations["seriesuid"] == uid]
-            for uid in uid_list
+            uid: annotations[annotations["seriesuid"] == uid] for uid in uid_list
         }
 
         if num_workers <= 1:

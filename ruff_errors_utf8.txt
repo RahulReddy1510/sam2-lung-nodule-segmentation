@@ -1,0 +1,241 @@
+﻿data\augmentation.py:399:89: E501 Line too long (91 > 88)
+data\dataset.py:11:1: I001 [*] Import block is un-sorted or un-formatted
+data\dataset.py:59:25: F821 Undefined name `Path`
+data\dataset.py:61:20: F821 Undefined name `Optional`
+data\dataset.py:61:29: F821 Undefined name `Callable`
+data\dataset.py:62:21: F821 Undefined name `Tuple`
+data\dataset.py:65:25: F821 Undefined name `Path`
+data\dataset.py:71:22: F821 Undefined name `List`
+data\dataset.py:71:27: F821 Undefined name `Dict`
+data\dataset.py:89:26: F821 Undefined name `List`
+data\dataset.py:92:89: E501 Line too long (90 > 88)
+data\dataset.py:99:24: F821 Undefined name `np`
+data\dataset.py:130:40: F821 Undefined name `Dict`
+data\dataset.py:147:24: F821 Undefined name `np`
+data\dataset.py:147:37: F821 Undefined name `np`
+data\dataset.py:148:23: F821 Undefined name `np`
+data\dataset.py:148:36: F821 Undefined name `np`
+data\dataset.py:160:22: F821 Undefined name `np`
+data\dataset.py:160:55: F821 Undefined name `np`
+data\dataset.py:161:21: F821 Undefined name `np`
+data\dataset.py:161:53: F821 Undefined name `np`
+data\dataset.py:167:17: F821 Undefined name `Dict`
+data\dataset.py:215:25: F821 Undefined name `Path`
+data\dataset.py:218:25: F821 Undefined name `Path`
+data\dataset.py:220:26: F821 Undefined name `List`
+data\dataset.py:232:89: E501 Line too long (90 > 88)
+data\dataset.py:240:40: F821 Undefined name `Dict`
+data\dataset.py:254:21: F821 Undefined name `np`
+data\dataset.py:254:46: F821 Undefined name `np`
+data\dataset.py:255:20: F821 Undefined name `np`
+data\dataset.py:255:45: F821 Undefined name `np`
+data\dataset.py:296:21: F821 Undefined name `Tuple`
+data\dataset.py:300:89: E501 Line too long (91 > 88)
+data\dataset.py:304:21: F821 Undefined name `np`
+data\dataset.py:311:26: F821 Undefined name `List`
+data\dataset.py:311:31: F821 Undefined name `Tuple`
+data\dataset.py:311:37: F821 Undefined name `np`
+data\dataset.py:311:49: F821 Undefined name `np`
+data\dataset.py:324:10: F821 Undefined name `Tuple`
+data\dataset.py:324:16: F821 Undefined name `np`
+data\dataset.py:324:28: F821 Undefined name `np`
+data\dataset.py:326:15: F821 Undefined name `np`
+data\dataset.py:329:72: F821 Undefined name `np`
+data\dataset.py:330:17: F821 Undefined name `np`
+data\dataset.py:335:22: F821 Undefined name `np`
+data\dataset.py:337:18: F821 Undefined name `np`
+data\dataset.py:337:72: F821 Undefined name `np`
+data\dataset.py:338:17: F821 Undefined name `np`
+data\dataset.py:340:50: F821 Undefined name `np`
+data\dataset.py:346:40: F821 Undefined name `Dict`
+data\dataset.py:351:59: F821 Undefined name `np`
+data\dataset.py:359:57: F821 Undefined name `np`
+data\dataset.py:400:17: F821 Undefined name `Path`
+data\luna16_preprocessing.py:24:8: F401 [*] `os` imported but unused
+data\luna16_preprocessing.py:474:89: E501 Line too long (90 > 88)
+data\luna16_preprocessing.py:475:89: E501 Line too long (89 > 88)
+data\luna16_preprocessing.py:571:89: E501 Line too long (91 > 88)
+evaluation\__init__.py:12:1: I001 [*] Import block is un-sorted or un-formatted
+evaluation\evaluate.py:44:1: I001 [*] Import block is un-sorted or un-formatted
+evaluation\evaluate.py:121:89: E501 Line too long (112 > 88)
+evaluation\evaluate.py:173:89: E501 Line too long (92 > 88)
+evaluation\evaluate.py:192:89: E501 Line too long (99 > 88)
+evaluation\evaluate.py:266:89: E501 Line too long (96 > 88)
+evaluation\evaluate.py:405:89: E501 Line too long (91 > 88)
+evaluation\evaluate.py:408:89: E501 Line too long (95 > 88)
+evaluation\evaluate.py:446:89: E501 Line too long (100 > 88)
+evaluation\radiologist_agreement.py:84:89: E501 Line too long (95 > 88)
+evaluation\radiologist_agreement.py:269:89: E501 Line too long (95 > 88)
+evaluation\radiologist_agreement.py:330:89: E501 Line too long (120 > 88)
+evaluation\radiologist_agreement.py:524:12: F401 [*] `scipy.stats` imported but unused
+evaluation\radiologist_agreement.py:551:89: E501 Line too long (94 > 88)
+evaluation\radiologist_agreement.py:561:89: E501 Line too long (91 > 88)
+evaluation\radiologist_agreement.py:567:89: E501 Line too long (111 > 88)
+evaluation\radiologist_agreement.py:568:89: E501 Line too long (102 > 88)
+evaluation\radiologist_agreement.py:569:89: E501 Line too long (90 > 88)
+evaluation\radiologist_agreement.py:573:89: E501 Line too long (111 > 88)
+evaluation\uncertainty_calibration.py:50:6: F821 Undefined name `Tuple`
+evaluation\uncertainty_calibration.py:218:89: E501 Line too long (106 > 88)
+evaluation\uncertainty_calibration.py:220:89: E501 Line too long (92 > 88)
+evaluation\uncertainty_calibration.py:278:20: F821 Undefined name `Tensor`
+evaluation\uncertainty_calibration.py:279:22: F821 Undefined name `Tensor`
+evaluation\uncertainty_calibration.py:280:17: F821 Undefined name `Tensor`
+evaluation\uncertainty_calibration.py:304:89: E501 Line too long (103 > 88)
+evaluation\uncertainty_calibration.py:331:89: E501 Line too long (113 > 88)
+evaluation\uncertainty_calibration.py:338:89: E501 Line too long (104 > 88)
+evaluation\uncertainty_calibration.py:392:89: E501 Line too long (113 > 88)
+models\__init__.py:16:1: I001 [*] Import block is un-sorted or un-formatted
+models\mc_dropout.py:23:20: F401 [*] `typing.Any` imported but unused
+models\mc_dropout.py:250:89: E501 Line too long (92 > 88)
+models\mc_dropout.py:453:89: E501 Line too long (104 > 88)
+models\mc_dropout.py:455:89: E501 Line too long (108 > 88)
+models\mc_dropout.py:456:89: E501 Line too long (103 > 88)
+models\mc_dropout.py:457:89: E501 Line too long (118 > 88)
+models\registry.py:152:89: E501 Line too long (91 > 88)
+models\sam2_finetune.py:23:8: F401 [*] `math` imported but unused
+models\sam2_finetune.py:24:8: F401 [*] `warnings` imported but unused
+models\sam2_finetune.py:106:89: E501 Line too long (92 > 88)
+models\sam2_finetune.py:107:89: E501 Line too long (92 > 88)
+models\sam2_finetune.py:280:89: E501 Line too long (90 > 88)
+models\sam2_finetune.py:491:89: E501 Line too long (93 > 88)
+models\sam2_finetune.py:697:12: F401 [*] `sys` imported but unused
+models\temporal_consistency.py:308:89: E501 Line too long (89 > 88)
+models\temporal_consistency.py:388:89: E501 Line too long (95 > 88)
+models\temporal_consistency.py:423:11: F541 [*] f-string without any placeholders
+models\temporal_consistency.py:432:11: F541 [*] f-string without any placeholders
+notebooks\01_data_exploration.ipynb:cell 2:2:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\01_data_exploration.ipynb:cell 2:9:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\01_data_exploration.ipynb:cell 6:7:89: E501 Line too long (91 > 88)
+notebooks\01_data_exploration.ipynb:cell 6:16:89: E501 Line too long (90 > 88)
+notebooks\01_data_exploration.ipynb:cell 6:19:89: E501 Line too long (97 > 88)
+notebooks\01_data_exploration.ipynb:cell 6:31:89: E501 Line too long (99 > 88)
+notebooks\01_data_exploration.ipynb:cell 6:32:89: E501 Line too long (106 > 88)
+notebooks\01_data_exploration.ipynb:cell 6:40:87: W291 [*] Trailing whitespace
+notebooks\01_data_exploration.ipynb:cell 8:13:89: E501 Line too long (90 > 88)
+notebooks\01_data_exploration.ipynb:cell 8:15:89: E501 Line too long (90 > 88)
+notebooks\01_data_exploration.ipynb:cell 8:19:89: E501 Line too long (89 > 88)
+notebooks\01_data_exploration.ipynb:cell 8:25:89: E501 Line too long (102 > 88)
+notebooks\01_data_exploration.ipynb:cell 10:4:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:7:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:14:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:19:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:27:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:31:1: W293 [*] Blank line contains whitespace
+notebooks\01_data_exploration.ipynb:cell 10:35:89: E501 Line too long (90 > 88)
+notebooks\01_data_exploration.ipynb:cell 12:21:89: E501 Line too long (104 > 88)
+notebooks\01_data_exploration.ipynb:cell 14:11:89: E501 Line too long (104 > 88)
+notebooks\01_data_exploration.ipynb:cell 14:13:89: E501 Line too long (153 > 88)
+notebooks\01_data_exploration.ipynb:cell 14:15:89: E501 Line too long (104 > 88)
+notebooks\02_model_development.ipynb:cell 2:1:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\02_model_development.ipynb:cell 2:6:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\02_model_development.ipynb:cell 8:1:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\02_model_development.ipynb:cell 10:6:89: E501 Line too long (97 > 88)
+notebooks\02_model_development.ipynb:cell 10:16:89: E501 Line too long (93 > 88)
+notebooks\02_model_development.ipynb:cell 12:42:89: E501 Line too long (97 > 88)
+notebooks\02_model_development.ipynb:cell 14:2:89: E501 Line too long (105 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 2:1:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\03_uncertainty_visualization.ipynb:cell 2:6:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\03_uncertainty_visualization.ipynb:cell 2:14:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\03_uncertainty_visualization.ipynb:cell 2:15:89: E501 Line too long (106 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 2:18:89: E501 Line too long (98 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 4:14:89: E501 Line too long (92 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 6:19:89: E501 Line too long (98 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 8:8:89: E501 Line too long (91 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 8:10:89: E501 Line too long (93 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 10:28:89: E501 Line too long (103 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 10:29:89: E501 Line too long (103 > 88)
+notebooks\03_uncertainty_visualization.ipynb:cell 12:5:89: E501 Line too long (101 > 88)
+notebooks\04_clinical_validation.ipynb:cell 2:1:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\04_clinical_validation.ipynb:cell 2:6:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\04_clinical_validation.ipynb:cell 2:12:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\04_clinical_validation.ipynb:cell 4:7:89: E501 Line too long (98 > 88)
+notebooks\04_clinical_validation.ipynb:cell 4:15:89: E501 Line too long (109 > 88)
+notebooks\04_clinical_validation.ipynb:cell 4:21:89: E501 Line too long (96 > 88)
+notebooks\04_clinical_validation.ipynb:cell 4:24:89: E501 Line too long (110 > 88)
+notebooks\04_clinical_validation.ipynb:cell 4:37:89: E501 Line too long (93 > 88)
+notebooks\04_clinical_validation.ipynb:cell 4:38:89: E501 Line too long (93 > 88)
+notebooks\04_clinical_validation.ipynb:cell 6:21:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\04_clinical_validation.ipynb:cell 6:25:1: W293 [*] Blank line contains whitespace
+notebooks\04_clinical_validation.ipynb:cell 6:29:1: W293 [*] Blank line contains whitespace
+notebooks\04_clinical_validation.ipynb:cell 6:44:89: E501 Line too long (122 > 88)
+notebooks\04_clinical_validation.ipynb:cell 8:29:89: E501 Line too long (92 > 88)
+notebooks\04_clinical_validation.ipynb:cell 8:32:1: I001 [*] Import block is un-sorted or un-formatted
+notebooks\04_clinical_validation.ipynb:cell 8:42:89: E501 Line too long (90 > 88)
+notebooks\04_clinical_validation.ipynb:cell 8:44:89: E501 Line too long (96 > 88)
+notebooks\04_clinical_validation.ipynb:cell 8:49:89: E501 Line too long (97 > 88)
+notebooks\04_clinical_validation.ipynb:cell 8:66:89: E501 Line too long (103 > 88)
+notebooks\04_clinical_validation.ipynb:cell 12:14:89: E501 Line too long (94 > 88)
+notebooks\04_clinical_validation.ipynb:cell 12:42:89: E501 Line too long (90 > 88)
+notebooks\04_clinical_validation.ipynb:cell 12:47:89: E501 Line too long (99 > 88)
+setup.py:8:1: I001 [*] Import block is un-sorted or un-formatted
+slicer_plugin\LungNoduleSeg.py:24:1: I001 [*] Import block is un-sorted or un-formatted
+slicer_plugin\LungNoduleSeg.py:27:8: F401 [*] `os` imported but unused
+slicer_plugin\LungNoduleSeg.py:119:89: E501 Line too long (89 > 88)
+slicer_plugin\LungNoduleSeg.py:267:89: E501 Line too long (92 > 88)
+slicer_plugin\LungNoduleSeg.py:444:89: E501 Line too long (93 > 88)
+slicer_plugin\LungNoduleSeg.py:464:89: E501 Line too long (100 > 88)
+slicer_plugin\LungNoduleSeg.py:510:9: I001 [*] Import block is un-sorted or un-formatted
+slicer_plugin\LungNoduleSeg.py:536:89: E501 Line too long (96 > 88)
+slicer_plugin\LungNoduleSeg.py:637:89: E501 Line too long (94 > 88)
+slicer_plugin\LungNoduleSeg.py:643:89: E501 Line too long (98 > 88)
+slicer_plugin\LungNoduleSeg.py:655:40: F541 [*] f-string without any placeholders
+tests\test_mc_dropout.py:11:1: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:54:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:54:56: F401 [*] `models.mc_dropout.enable_dropout_modules` imported but unused
+tests\test_mc_dropout.py:65:89: E501 Line too long (94 > 88)
+tests\test_mc_dropout.py:67:89: E501 Line too long (92 > 88)
+tests\test_mc_dropout.py:80:89: E501 Line too long (92 > 88)
+tests\test_mc_dropout.py:93:89: E501 Line too long (91 > 88)
+tests\test_mc_dropout.py:158:89: E501 Line too long (90 > 88)
+tests\test_mc_dropout.py:159:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:214:89: E501 Line too long (92 > 88)
+tests\test_mc_dropout.py:221:89: E501 Line too long (96 > 88)
+tests\test_mc_dropout.py:251:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:260:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:269:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:284:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:297:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:310:39: F401 [*] `models.mc_dropout.mc_predict` imported but unused
+tests\test_mc_dropout.py:318:89: E501 Line too long (106 > 88)
+tests\test_mc_dropout.py:339:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_mc_dropout.py:362:89: E501 Line too long (91 > 88)
+tests\test_metrics.py:11:1: I001 [*] Import block is un-sorted or un-formatted
+tests\test_metrics.py:201:89: E501 Line too long (90 > 88)
+tests\test_metrics.py:202:89: E501 Line too long (93 > 88)
+tests\test_metrics.py:259:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_metrics.py:270:9: I001 [*] Import block is un-sorted or un-formatted
+tests\test_metrics.py:277:89: E501 Line too long (97 > 88)
+tests\test_metrics.py:351:89: E501 Line too long (100 > 88)
+tests\test_model.py:10:1: I001 [*] Import block is un-sorted or un-formatted
+tests\test_model.py:158:89: E501 Line too long (105 > 88)
+tests\test_model.py:165:89: E501 Line too long (89 > 88)
+tests\test_model.py:279:89: E501 Line too long (91 > 88)
+tests\test_model.py:310:89: E501 Line too long (95 > 88)
+tests\test_preprocessing.py:11:1: I001 [*] Import block is un-sorted or un-formatted
+tests\test_preprocessing.py:158:89: E501 Line too long (97 > 88)
+tests\test_preprocessing.py:159:89: E501 Line too long (104 > 88)
+tests\test_preprocessing.py:244:9: F841 Local variable `is_same` is assigned to but never used
+tests\test_preprocessing.py:252:89: E501 Line too long (90 > 88)
+training\lr_scheduler.py:24:37: F401 [*] `typing.Optional` imported but unused
+training\lr_scheduler.py:167:89: E501 Line too long (94 > 88)
+training\lr_scheduler.py:299:89: E501 Line too long (106 > 88)
+training\lr_scheduler.py:309:89: E501 Line too long (114 > 88)
+training\lr_scheduler.py:314:89: E501 Line too long (106 > 88)
+training\lr_scheduler.py:340:89: E501 Line too long (96 > 88)
+training\lr_scheduler.py:348:89: E501 Line too long (100 > 88)
+training\train.py:6:89: E501 Line too long (92 > 88)
+training\train.py:7:89: E501 Line too long (91 > 88)
+training\train.py:39:8: F401 [*] `os` imported but unused
+training\train.py:57:1: I001 [*] Import block is un-sorted or un-formatted
+training\train.py:401:89: E501 Line too long (96 > 88)
+training\train.py:472:89: E501 Line too long (101 > 88)
+training\train.py:508:89: E501 Line too long (92 > 88)
+training\train.py:509:89: E501 Line too long (91 > 88)
+training\train.py:517:89: E501 Line too long (112 > 88)
+training\train.py:646:89: E501 Line too long (94 > 88)
+training\train.py:650:89: E501 Line too long (117 > 88)
+training\train.py:749:89: E501 Line too long (181 > 88)
+training\train.py:764:89: E501 Line too long (94 > 88)
+training\train.py:784:89: E501 Line too long (89 > 88)
+Found 239 errors.
+[*] 58 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

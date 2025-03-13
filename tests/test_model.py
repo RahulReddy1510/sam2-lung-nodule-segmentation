@@ -7,10 +7,10 @@ gradient flow, and TemporalConsistencyLoss.
 Run:
     pytest tests/test_model.py -v
 """
+
 import pytest
 import torch
 import torch.nn as nn
-
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -19,10 +19,13 @@ import torch.nn as nn
 def model_frozen():
     """SAM2LungSegmentor with encoder frozen."""
     from models.registry import get_model
+
     return get_model(
         "sam2_lung_seg",
-        embed_dim=256, num_heads=8,
-        attn_dropout=0.1, proj_dropout=0.1,
+        embed_dim=256,
+        num_heads=8,
+        attn_dropout=0.1,
+        proj_dropout=0.1,
         encoder_frozen=True,
     )
 
@@ -31,10 +34,13 @@ def model_frozen():
 def model_unfrozen():
     """SAM2LungSegmentor with encoder unfrozen."""
     from models.registry import get_model
+
     return get_model(
         "sam2_lung_seg",
-        embed_dim=256, num_heads=8,
-        attn_dropout=0.1, proj_dropout=0.1,
+        embed_dim=256,
+        num_heads=8,
+        attn_dropout=0.1,
+        proj_dropout=0.1,
         encoder_frozen=False,
     )
 
@@ -59,17 +65,20 @@ class TestModelRegistry:
 
     def test_default_model_creation(self):
         from models.registry import get_model
+
         m = get_model("sam2_lung_seg")
         assert m is not None
         assert isinstance(m, nn.Module)
 
     def test_unknown_model_raises(self):
         from models.registry import get_model
+
         with pytest.raises((KeyError, ValueError, RuntimeError)):
             get_model("nonexistent_model_xyz")
 
     def test_list_models_contains_default(self):
         from models.registry import ModelRegistry
+
         names = ModelRegistry.list()
         assert isinstance(names, (list, tuple, set))
         assert any("sam2" in n.lower() or "lung" in n.lower() for n in names)
@@ -94,9 +103,7 @@ class TestForwardPass:
         model_frozen.eval()
         with torch.no_grad():
             out = model_frozen(dummy_batch)
-        assert out.shape == (2, 1, 96, 96), (
-            f"Expected (2,1,96,96), got {out.shape}"
-        )
+        assert out.shape == (2, 1, 96, 96), f"Expected (2,1,96,96), got {out.shape}"
 
     def test_output_shape_large_batch(self, model_frozen, dummy_batch_large):
         model_frozen.eval()
@@ -129,9 +136,9 @@ class TestForwardPass:
             out_batch = model_frozen(x)
             out_single = model_frozen(x[[1]])
         # Slice 1 from batch must match single forward pass
-        assert torch.allclose(out_batch[1], out_single[0], atol=1e-5), (
-            "Batch inference is not sample-independent"
-        )
+        assert torch.allclose(
+            out_batch[1], out_single[0], atol=1e-5
+        ), "Batch inference is not sample-independent"
 
     def test_different_input_gives_different_output(self, model_frozen):
         """Distinct inputs should (almost certainly) produce distinct outputs."""
@@ -155,18 +162,23 @@ class TestEncoderFreezeUnfreeze:
         if not hasattr(model_frozen, "encoder"):
             pytest.skip("Model does not expose .encoder attribute")
         for name, p in model_frozen.encoder.named_parameters():
-            assert not p.requires_grad, f"Encoder param {name} has requires_grad=True (should be frozen)"
+            assert (
+                not p.requires_grad
+            ), f"Encoder param {name} has requires_grad=True (should be frozen)"
 
     def test_unfrozen_encoder_has_grad(self, model_unfrozen):
         """When encoder is unfrozen, encoder params must have requires_grad=True."""
         if not hasattr(model_unfrozen, "encoder"):
             pytest.skip("Model does not expose .encoder attribute")
         grads = [p.requires_grad for _, p in model_unfrozen.encoder.named_parameters()]
-        assert any(grads), "No encoder parameter has requires_grad=True after unfreezing"
+        assert any(
+            grads
+        ), "No encoder parameter has requires_grad=True after unfreezing"
 
     def test_freeze_unfreeze_toggle(self):
         """freeze_encoder() / unfreeze_encoder() should toggle grad correctly."""
         from models.registry import get_model
+
         m = get_model("sam2_lung_seg", encoder_frozen=False)
         if not (hasattr(m, "freeze_encoder") and hasattr(m, "unfreeze_encoder")):
             pytest.skip("Model lacks freeze_encoder/unfreeze_encoder methods")
@@ -217,11 +229,10 @@ class TestGradientFlow:
     def test_loss_decreases_with_gradient_step(self):
         """A single SGD step should decrease loss on a simple batch."""
         from models.registry import get_model
+
         m = get_model("sam2_lung_seg", encoder_frozen=True)
         m.train()
-        opt = torch.optim.SGD(
-            [p for p in m.parameters() if p.requires_grad], lr=0.01
-        )
+        opt = torch.optim.SGD([p for p in m.parameters() if p.requires_grad], lr=0.01)
         x = torch.randn(2, 1, 96, 96)
         t = torch.zeros(2, 1, 96, 96)
 
@@ -253,6 +264,7 @@ class TestTemporalConsistencyLoss:
     @pytest.fixture(scope="class")
     def tc_loss(self):
         from models.temporal_consistency import TemporalConsistencyLoss
+
         return TemporalConsistencyLoss(
             lambda_bce=0.5,
             lambda_tc=0.3,
@@ -276,7 +288,9 @@ class TestTemporalConsistencyLoss:
         target = (torch.rand(2, 1, 96, 96) > 0.5).float()
         result = tc_loss(logits, target)
         for key in ("dice", "bce", "temporal"):
-            assert key in result, f"Missing component key '{key}' in {list(result.keys())}"
+            assert (
+                key in result
+            ), f"Missing component key '{key}' in {list(result.keys())}"
 
     def test_loss_positive(self, tc_loss):
         """Total loss should be non-negative."""
@@ -306,11 +320,9 @@ class TestTemporalConsistencyLoss:
         logits = torch.full((2, 1, 96, 96), 10.0)
         target = torch.ones(2, 1, 96, 96)
         result = tc_loss(logits, target)
-        assert result["bce"].item() < 0.5, (
-            f"BCE should be small for near-perfect predictions, got {result['bce'].item():.4f}"
-        )
-
-
+        assert (
+            result["bce"].item() < 0.5
+        ), f"BCE should be small for near-perfect predictions, got {result['bce'].item():.4f}"
 
 
 # ── Channel adapter smoke tests ───────────────────────────────────────────────

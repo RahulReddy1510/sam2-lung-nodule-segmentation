@@ -2,15 +2,13 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.1-EE4C2C?logo=pytorch&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
 ![Dice](https://img.shields.io/badge/Dice-94.3%25-brightgreen)
 ![Radiologist Agreement](https://img.shields.io/badge/Radiologist%20Agreement-91%25-blue)
 ![Platform](https://img.shields.io/badge/Platform-3D%20Slicer-orange)
 
-> **"This tells me where to look twice. That's what I actually need."**
-> — Radiologist feedback during clinical validation, January 2025
+### Precision Clinical Support through Uncertainty-Aware Segmentation
 
-That quote reframes this entire project. The goal is not simply to maximize Dice score — it is to build a system that communicates *honest uncertainty* to clinicians, elevating the interaction from "trust the AI mask" to "here is where the model is confident and where it is not." Uncertainty quantification transforms a segmentation tool into a decision-support instrument.
+This project addresses the critical challenge of domain-specific adaptation for foundation models in medical imaging. By fine-tuning Segment Anything Model 2 (SAM2) on the LUNA16 CT dataset, we elevate lung nodule segmentation from a black-box mask generator into a robust, decision-support instrument that communicates statistically reliable uncertainty estimates to clinicians.
 
 Fine-tuned Meta's Segment Anything Model 2 (SAM2) on the LUNA16 CT dataset for lung nodule segmentation, achieving **94.3% Dice score** with calibrated uncertainty estimates via Monte Carlo Dropout. A slice-level temporal consistency constraint enforces anatomically coherent predictions across adjacent CT slices. Validated on 150 clinical studies with **91% radiologist agreement** (Cohen's κ = 0.83) and deployed as a **3D Slicer plugin** for clinical integration.
 
@@ -197,7 +195,7 @@ sam2-lung-nodule-segmentation/
   author    = {Koulury, Rahul Reddy},
   year      = {2025},
   month     = {June},
-  note      = {GitHub Research Repository, NYU MIDSAI application project},
+  note      = {GitHub Research Repository},
   url       = {https://github.com/rahulkoulury/sam2-lung-nodule-segmentation}
 }
 ```
@@ -212,8 +210,3 @@ sam2-lung-nodule-segmentation/
 - **3D Slicer** — Open-source medical imaging platform hosting the clinical plugin
 - **Manipal Academy of Higher Education** — Institutional support during project development
 
----
-
-## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

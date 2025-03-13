@@ -33,11 +33,9 @@ Requires: PyTorch ≥ 2.1, PyYAML, tqdm, (optional) wandb
 from __future__ import annotations
 
 import argparse
-import contextlib
 import copy
 import json
 import logging
-import os
 import random
 import sys
 import time
@@ -57,9 +55,9 @@ from tqdm import tqdm
 sys.path.insert(0, str(Path(__file__).parents[1]))
 from data.augmentation import get_augmentation_pipeline
 from data.dataset import build_dataset
-from models.registry import ModelRegistry, get_model
-from models.mc_dropout import mc_predict, compute_uncertainty_stats
-from models.temporal_consistency import TemporalConsistencyLoss, AblationLossFactory
+from models.mc_dropout import mc_predict
+from models.registry import get_model
+from models.temporal_consistency import TemporalConsistencyLoss
 from training.lr_scheduler import build_scheduler, get_lr
 
 logger = logging.getLogger(__name__)
@@ -67,6 +65,7 @@ logger = logging.getLogger(__name__)
 # Optional W&B
 try:
     import wandb
+
     _WANDB_AVAILABLE = True
 except ImportError:
     _WANDB_AVAILABLE = False
@@ -141,8 +140,7 @@ def apply_profile(cfg: Dict, profile_name: str) -> Dict:
     profiles = cfg.get("ablation_profiles", {})
     if profile_name not in profiles:
         raise KeyError(
-            f"Profile {profile_name!r} not found. "
-            f"Available: {list(profiles)}"
+            f"Profile {profile_name!r} not found. " f"Available: {list(profiles)}"
         )
     profile = profiles[profile_name]
     cfg = copy.deepcopy(cfg)
@@ -348,9 +346,7 @@ def save_checkpoint(
         "model_state_dict": model.state_dict(),
         "optimizer_state_dict": optimizer.state_dict(),
         "scheduler_state_dict": (
-            scheduler.state_dict()
-            if hasattr(scheduler, "state_dict")
-            else {}
+            scheduler.state_dict() if hasattr(scheduler, "state_dict") else {}
         ),
         "metrics": metrics,
         "config": cfg,
@@ -399,7 +395,9 @@ def load_checkpoint(
             logger.warning("Could not restore scheduler state: %s", exc)
     epoch = ckpt.get("epoch", 0)
     metrics = ckpt.get("metrics", {})
-    logger.info("Checkpoint loaded: epoch=%d  val_dice=%.4f", epoch, metrics.get("val_dice", 0))
+    logger.info(
+        "Checkpoint loaded: epoch=%d  val_dice=%.4f", epoch, metrics.get("val_dice", 0)
+    )
     return epoch, metrics
 
 
@@ -470,7 +468,9 @@ def train(cfg: Dict) -> None:
 
     # ── Device and mixed precision ─────────────────────────────────────────
     device_str: str = exp_cfg.get("device", "cuda")
-    device = torch.device(device_str if torch.cuda.is_available() or device_str != "cuda" else "cpu")
+    device = torch.device(
+        device_str if torch.cuda.is_available() or device_str != "cuda" else "cpu"
+    )
     use_amp: bool = bool(exp_cfg.get("mixed_precision", True)) and device.type == "cuda"
     logger.info("Device: %s | AMP: %s", device, use_amp)
 
@@ -495,6 +495,7 @@ def train(cfg: Dict) -> None:
     if cfg.get("logging", {}).get("tensorboard", True):
         try:
             from torch.utils.tensorboard import SummaryWriter
+
             tb_writer = SummaryWriter(log_dir=str(run_dir / "tensorboard"))
             logger.info("TensorBoard logging → %s", run_dir / "tensorboard")
         except ImportError:
@@ -506,8 +507,12 @@ def train(cfg: Dict) -> None:
     aug_transform = get_augmentation_pipeline(aug_cfg, augment=True)
     no_aug_transform = get_augmentation_pipeline({}, augment=False)
 
-    train_ds = build_dataset(data_dir, split="train", mode="slice", transform=aug_transform)
-    val_ds = build_dataset(data_dir, split="val", mode="slice", transform=no_aug_transform)
+    train_ds = build_dataset(
+        data_dir, split="train", mode="slice", transform=aug_transform
+    )
+    val_ds = build_dataset(
+        data_dir, split="val", mode="slice", transform=no_aug_transform
+    )
 
     train_loader = DataLoader(
         train_ds,
@@ -515,7 +520,11 @@ def train(cfg: Dict) -> None:
         shuffle=True,
         num_workers=int(data_cfg.get("num_workers", 4)),
         pin_memory=bool(data_cfg.get("pin_memory", True)),
-        prefetch_factor=int(data_cfg.get("prefetch_factor", 2)) if data_cfg.get("num_workers", 4) > 0 else None,
+        prefetch_factor=(
+            int(data_cfg.get("prefetch_factor", 2))
+            if data_cfg.get("num_workers", 4) > 0
+            else None
+        ),
         drop_last=True,
     )
     val_loader = DataLoader(
@@ -528,7 +537,9 @@ def train(cfg: Dict) -> None:
     )
     logger.info(
         "Datasets: train=%d slices | val=%d slices | batch=%d",
-        len(train_ds), len(val_ds), data_cfg.get("batch_size", 16),
+        len(train_ds),
+        len(val_ds),
+        data_cfg.get("batch_size", 16),
     )
 
     # ── Model ─────────────────────────────────────────────────────────────
@@ -558,7 +569,8 @@ def train(cfg: Dict) -> None:
     # Separate LR groups: encoder vs. decoder + adapter
     encoder_params = [p for p in model.encoder.parameters() if p.requires_grad]
     other_params = [
-        p for n, p in model.named_parameters()
+        p
+        for n, p in model.named_parameters()
         if p.requires_grad and not n.startswith("encoder")
     ]
     param_groups = [
@@ -644,11 +656,15 @@ def train(cfg: Dict) -> None:
         running_tc = 0.0
         n_batches_train = 0
 
-        pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{total_epochs} [train]", leave=False)
+        pbar = tqdm(
+            train_loader, desc=f"Epoch {epoch+1}/{total_epochs} [train]", leave=False
+        )
         for batch_idx, batch in enumerate(pbar):
             images: Tensor = batch["image"].to(device, non_blocking=True)
             masks: Tensor = batch["mask"].to(device, non_blocking=True)
-            slice_indices: Tensor = batch.get("slice_idx", torch.zeros(images.shape[0], dtype=torch.long)).to(device)
+            slice_indices: Tensor = batch.get(
+                "slice_idx", torch.zeros(images.shape[0], dtype=torch.long)
+            ).to(device)
 
             optimizer.zero_grad(set_to_none=True)
 
@@ -717,8 +733,12 @@ def train(cfg: Dict) -> None:
         val_metrics: Dict[str, float] = {}
         if (epoch + 1) % val_interval == 0:
             val_metrics = evaluate(
-                model, val_loader, criterion, device,
-                mc_samples=mc_val, mc_batch_size=int(mc_cfg.get("mc_batch_size", 5)),
+                model,
+                val_loader,
+                criterion,
+                device,
+                mc_samples=mc_val,
+                mc_batch_size=int(mc_cfg.get("mc_batch_size", 5)),
                 threshold=float(mc_cfg.get("threshold", 0.5)),
             )
             val_dice = val_metrics.get("val_dice", 0.0)
@@ -739,15 +759,28 @@ def train(cfg: Dict) -> None:
             logger.info(
                 "Epoch %3d/%d | tr_loss=%.4f tr_dice=%.4f | "
                 "val_dice=%.4f val_iou=%.4f | lr=%.2e | tc_loss=%.4f | %.1fs",
-                epoch + 1, total_epochs,
-                avg_train_loss, avg_train_dice,
-                val_dice, val_metrics.get("val_iou", 0.0),
-                epoch_lr, avg_tc, epoch_time,
+                epoch + 1,
+                total_epochs,
+                avg_train_loss,
+                avg_train_dice,
+                val_dice,
+                val_metrics.get("val_iou", 0.0),
+                epoch_lr,
+                avg_tc,
+                epoch_time,
             )
 
             # Log to W&B / TB
             if wb_active:
-                wandb.log({"train/avg_loss": avg_train_loss, "train/avg_dice": avg_train_dice, **{f"eval/{k}": v for k, v in val_metrics.items()}, "lr": epoch_lr}, step=global_step)
+                wandb.log(
+                    {
+                        "train/avg_loss": avg_train_loss,
+                        "train/avg_dice": avg_train_dice,
+                        **{f"eval/{k}": v for k, v in val_metrics.items()},
+                        "lr": epoch_lr,
+                    },
+                    step=global_step,
+                )
             if tb_writer is not None:
                 for k, v in val_metrics.items():
                     tb_writer.add_scalar(f"eval/{k}", v, epoch)
@@ -761,8 +794,11 @@ def train(cfg: Dict) -> None:
                         s_msk = sample_batch["mask"][:4]
                         s_pred = torch.sigmoid(model(s_img)).cpu()
                     import torchvision
+
                     grid = torchvision.utils.make_grid(
-                        torch.cat([s_img.cpu(), s_msk, s_pred], dim=0), nrow=4, normalize=True
+                        torch.cat([s_img.cpu(), s_msk, s_pred], dim=0),
+                        nrow=4,
+                        normalize=True,
                     )
                     tb_writer.add_image("val/predictions", grid, epoch)
                 except Exception as exc:
@@ -780,9 +816,16 @@ def train(cfg: Dict) -> None:
                 # Save best checkpoint
                 save_checkpoint(
                     ckpt_dir / "best_model.pt",
-                    model, optimizer, scheduler, epoch + 1, val_metrics, cfg,
+                    model,
+                    optimizer,
+                    scheduler,
+                    epoch + 1,
+                    val_metrics,
+                    cfg,
                 )
-                logger.info("★ New best val_dice=%.4f — checkpoint saved", best_val_dice)
+                logger.info(
+                    "★ New best val_dice=%.4f — checkpoint saved", best_val_dice
+                )
                 if wb_active:
                     wandb.run.summary["best_val_dice"] = best_val_dice
             else:
@@ -790,7 +833,8 @@ def train(cfg: Dict) -> None:
                 if epochs_no_improve >= early_pat:
                     logger.info(
                         "Early stopping at epoch %d (no improvement for %d epochs)",
-                        epoch + 1, early_pat,
+                        epoch + 1,
+                        early_pat,
                     )
                     break
 
@@ -801,8 +845,12 @@ def train(cfg: Dict) -> None:
         if (epoch + 1) % save_interval == 0:
             save_checkpoint(
                 ckpt_dir / f"checkpoint_epoch_{epoch+1:03d}.pt",
-                model, optimizer, scheduler, epoch + 1,
-                val_metrics or {"val_dice": avg_train_dice}, cfg,
+                model,
+                optimizer,
+                scheduler,
+                epoch + 1,
+                val_metrics or {"val_dice": avg_train_dice},
+                cfg,
             )
 
     # ── Post-training ──────────────────────────────────────────────────────

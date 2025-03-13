@@ -12,7 +12,7 @@ Run this file for a demo::
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -210,8 +210,8 @@ def compute_hausdorff(
         dt_p = distance_transform_edt(1 - p)  # dist from every non-p pixel to p border
         dt_t = distance_transform_edt(1 - t)  # dist from every non-t pixel to t border
         # HD: symmetric surface distance
-        dist_p_to_t = dt_t[p > 0.5]   # distances from p surface to t
-        dist_t_to_p = dt_p[t > 0.5]   # distances from t surface to p
+        dist_p_to_t = dt_t[p > 0.5]  # distances from p surface to t
+        dist_t_to_p = dt_p[t > 0.5]  # distances from t surface to p
         all_dists = np.concatenate([dist_p_to_t, dist_t_to_p])
         hd = float(np.percentile(all_dists, percentile))
         hd_list.append(hd)
@@ -387,7 +387,7 @@ if __name__ == "__main__":
     pred_perfect = target.clone() * 2.0 - 1.0  # convert to logits ≈ ±1
 
     metrics_perfect = compute_all_metrics(pred_perfect, target)
-    print(f"\nPerfect prediction:")
+    print("\nPerfect prediction:")
     for k, v in metrics_perfect.items():
         print(f"  {k}: {v:.6f}")
     assert abs(metrics_perfect["dice"] - 1.0) < 1e-4, "Perfect dice should be ≈1"
@@ -395,7 +395,7 @@ if __name__ == "__main__":
     # Random prediction
     pred_random = torch.randn(B, 1, H, W)
     metrics_random = compute_all_metrics(pred_random, target)
-    print(f"\nRandom prediction:")
+    print("\nRandom prediction:")
     for k, v in metrics_random.items():
         print(f"  {k}: {v:.6f}")
     assert metrics_random["dice"] < 0.9, "Random dice should be < 0.9"

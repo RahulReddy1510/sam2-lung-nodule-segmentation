@@ -21,7 +21,7 @@ Run this file for a demo::
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Optional, Sequence
 
 import numpy as np
 
@@ -30,8 +30,10 @@ logger = logging.getLogger(__name__)
 # Optional matplotlib
 try:
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
     _MPL_AVAILABLE = True
 except ImportError:
     _MPL_AVAILABLE = False
@@ -81,7 +83,9 @@ def cohens_kappa(
     ra = np.asarray(rater_a, dtype=int)
     rb = np.asarray(rater_b, dtype=int)
     if len(ra) != len(rb):
-        raise ValueError(f"rater_a and rater_b must have equal length: {len(ra)} vs {len(rb)}")
+        raise ValueError(
+            f"rater_a and rater_b must have equal length: {len(ra)} vs {len(rb)}"
+        )
     if len(ra) == 0:
         raise ValueError("Rater sequences must not be empty")
 
@@ -181,7 +185,7 @@ def fleiss_kappa(
 
     # Expected agreement: p_j = proportion of all ratings in category j
     p_j = counts.sum(axis=0) / (N * k)
-    p_e = (p_j ** 2).sum()
+    p_e = (p_j**2).sum()
 
     denom = 1.0 - p_e
     if abs(denom) < 1e-10:
@@ -221,7 +225,7 @@ def percent_agreement(
     """
     ratings = np.asarray(ratings_matrix, dtype=int)
     # All raters agree ↔ max == min along rater axis
-    agree = (ratings.max(axis=1) == ratings.min(axis=1))
+    agree = ratings.max(axis=1) == ratings.min(axis=1)
     return float(agree.mean())
 
 
@@ -266,7 +270,9 @@ def bland_altman(
     a = np.asarray(method_a, dtype=float)
     b = np.asarray(method_b, dtype=float)
     if len(a) != len(b):
-        raise ValueError(f"method_a and method_b must have equal length: {len(a)} vs {len(b)}")
+        raise ValueError(
+            f"method_a and method_b must have equal length: {len(a)} vs {len(b)}"
+        )
 
     diff = a - b
     mean_diff = float(diff.mean())
@@ -274,6 +280,7 @@ def bland_altman(
 
     # z for given confidence level (approximation for large N)
     import scipy.stats
+
     z = float(scipy.stats.norm.ppf((1 + confidence) / 2))
 
     loa_upper = mean_diff + z * std_diff
@@ -327,11 +334,26 @@ def plot_bland_altman(
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.scatter(means, diffs, alpha=0.6, s=30, color="#4C72B0", label="Observations")
-    ax.axhline(ba_stats["mean_diff"], color="#C44E52", linewidth=2, label=f"Bias = {ba_stats['mean_diff']:.2f} {units}")
-    ax.axhline(ba_stats["loa_upper"], color="#DD8452", linewidth=1.5, linestyle="--",
-               label=f"LoA upper = {ba_stats['loa_upper']:.2f} {units}")
-    ax.axhline(ba_stats["loa_lower"], color="#DD8452", linewidth=1.5, linestyle="--",
-               label=f"LoA lower = {ba_stats['loa_lower']:.2f} {units}")
+    ax.axhline(
+        ba_stats["mean_diff"],
+        color="#C44E52",
+        linewidth=2,
+        label=f"Bias = {ba_stats['mean_diff']:.2f} {units}",
+    )
+    ax.axhline(
+        ba_stats["loa_upper"],
+        color="#DD8452",
+        linewidth=1.5,
+        linestyle="--",
+        label=f"LoA upper = {ba_stats['loa_upper']:.2f} {units}",
+    )
+    ax.axhline(
+        ba_stats["loa_lower"],
+        color="#DD8452",
+        linewidth=1.5,
+        linestyle="--",
+        label=f"LoA lower = {ba_stats['loa_lower']:.2f} {units}",
+    )
     ax.axhline(0, color="gray", linewidth=0.8, linestyle=":")
 
     ax.set_xlabel(f"Mean of model + radiologist ({units})", fontsize=11)
@@ -490,7 +512,9 @@ class RadiologistAgreement:
 
             if save_ba_plot:
                 plot_bland_altman(
-                    model_vol, rad_mean_vol, ba_stats,
+                    model_vol,
+                    rad_mean_vol,
+                    ba_stats,
                     title=f"Bland-Altman: Model vs Radiologists (n={N})",
                     save_path=save_ba_plot,
                 )
@@ -501,9 +525,12 @@ class RadiologistAgreement:
         logger.info(
             "RadiologistAgreement: N=%d | %%agree=%.1f%% | "
             "Cohen κ=%.3f±%.3f | Fleiss κ=%.3f | interp=%s",
-            N, pct_agree * 100,
-            kappa_mean, kappa_std,
-            fleiss["kappa"], fleiss["interpretation"],
+            N,
+            pct_agree * 100,
+            kappa_mean,
+            kappa_std,
+            fleiss["kappa"],
+            fleiss["interpretation"],
         )
 
         return output
@@ -521,7 +548,6 @@ class RadiologistAgreement:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import scipy.stats
 
     logging.basicConfig(level=logging.INFO)
     print("=" * 60)
@@ -535,7 +561,7 @@ if __name__ == "__main__":
     # Simulate ground truth labels with 91% model agreement
     gt_labels = rng.binomial(1, 0.5, N_STUDIES)
     model_labels = gt_labels.copy()
-    flip_mask = rng.random(N_STUDIES) < 0.09   # 9% error rate → 91% agreement
+    flip_mask = rng.random(N_STUDIES) < 0.09  # 9% error rate → 91% agreement
     model_labels[flip_mask] = 1 - model_labels[flip_mask]
 
     # Radiologists agree with GT ~93% of the time each
@@ -548,7 +574,9 @@ if __name__ == "__main__":
 
     # Volume measurements: model slightly over-estimates vs radiologist mean
     model_volumes = rng.normal(450, 120, N_STUDIES).clip(50, 2000)
-    rad_volumes_list = [rng.normal(440, 110, N_STUDIES).clip(50, 2000) for _ in range(N_RADS)]
+    rad_volumes_list = [
+        rng.normal(440, 110, N_STUDIES).clip(50, 2000) for _ in range(N_RADS)
+    ]
 
     # Build RadiologistAgreement
     ra = RadiologistAgreement(n_radiologists=N_RADS)
@@ -558,22 +586,32 @@ if __name__ == "__main__":
             model_label=int(model_labels[i]),
             radiologist_labels=[int(rad_labels[r][i]) for r in range(N_RADS)],
             model_volume_mm3=float(model_volumes[i]),
-            radiologist_volumes_mm3=[float(rad_volumes_list[r][i]) for r in range(N_RADS)],
+            radiologist_volumes_mm3=[
+                float(rad_volumes_list[r][i]) for r in range(N_RADS)
+            ],
         )
 
     results = ra.compute(save_ba_plot="bland_altman_demo.png")
 
     print(f"\nn_studies:          {results['n_studies']}")
-    print(f"percent_agreement:  {results['percent_agreement']:.3f}  ({results['percent_agreement']*100:.1f}%)")
-    print(f"Cohen κ (mean):     {results['cohen_kappa_mean']:.4f} ± {results['cohen_kappa_std']:.4f}")
-    print(f"Cohen κ per rater:  {[f'{k:.4f}' for k in results['cohen_kappa_per_rater']]}")
-    fk = results['fleiss_kappa']
+    print(
+        f"percent_agreement:  {results['percent_agreement']:.3f}  ({results['percent_agreement']*100:.1f}%)"
+    )
+    print(
+        f"Cohen κ (mean):     {results['cohen_kappa_mean']:.4f} ± {results['cohen_kappa_std']:.4f}"
+    )
+    print(
+        f"Cohen κ per rater:  {[f'{k:.4f}' for k in results['cohen_kappa_per_rater']]}"
+    )
+    fk = results["fleiss_kappa"]
     print(f"Fleiss κ:           {fk['kappa']:.4f}  ({fk['interpretation']})")
-    ba = results['bland_altman']
-    print(f"Bland-Altman bias:  {ba['mean_diff']:.2f} mm³  LoA=[{ba['loa_lower']:.2f}, {ba['loa_upper']:.2f}]")
+    ba = results["bland_altman"]
+    print(
+        f"Bland-Altman bias:  {ba['mean_diff']:.2f} mm³  LoA=[{ba['loa_lower']:.2f}, {ba['loa_upper']:.2f}]"
+    )
 
     # Assertions matching paper targets
-    assert results['percent_agreement'] > 0.85, "Agreement should be > 85%"
-    assert results['cohen_kappa_mean'] > 0.70, "κ should be > 0.70"
+    assert results["percent_agreement"] > 0.85, "Agreement should be > 85%"
+    assert results["cohen_kappa_mean"] > 0.70, "κ should be > 0.70"
     print("\nAll assertions passed. ✓")
     print("Saved bland_altman_demo.png")

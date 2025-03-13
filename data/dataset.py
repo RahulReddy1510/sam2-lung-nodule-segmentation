@@ -11,13 +11,11 @@ Two dataset classes are provided:
 from __future__ import annotations
 
 import logging
-import os
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
-from torch import Tensor
 from torch.utils.data import Dataset
 
 logger = logging.getLogger(__name__)
@@ -95,7 +93,9 @@ class LUNA16SliceDataset(Dataset):
         self._patch_ids: List[str] = []
 
         for img_path in image_paths:
-            mask_path = img_path.parent / img_path.name.replace("_image.npy", "_mask.npy")
+            mask_path = img_path.parent / img_path.name.replace(
+                "_image.npy", "_mask.npy"
+            )
             if not mask_path.exists():
                 logger.debug("Mask missing for %s — skipping", img_path.name)
                 continue
@@ -235,7 +235,9 @@ class LUNA16VolumeDataset(Dataset):
     def _build_index(self) -> None:
         image_paths = sorted(self.data_dir.glob("*_image.npy"))
         for img_path in image_paths:
-            mask_path = img_path.parent / img_path.name.replace("_image.npy", "_mask.npy")
+            mask_path = img_path.parent / img_path.name.replace(
+                "_image.npy", "_mask.npy"
+            )
             if mask_path.exists():
                 patch_id = img_path.name.replace("_image.npy", "")
                 self._patch_ids.append(patch_id)
@@ -303,7 +305,10 @@ class SyntheticNoduleDataset(Dataset):
         mode: str = "slice",
         seed: int = 42,
     ) -> None:
-        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        assert mode in (
+            "slice",
+            "volume",
+        ), f"mode must be 'slice' or 'volume', got {mode}"
         self.n_patches = n_patches
         self.patch_size = patch_size
         self.mode = mode
@@ -325,9 +330,7 @@ class SyntheticNoduleDataset(Dataset):
             "SyntheticNoduleDataset: mode=%s | %d items", mode, len(self._items)
         )
 
-    def _make_patch(
-        self, seed_offset: int
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _make_patch(self, seed_offset: int) -> Tuple[np.ndarray, np.ndarray]:
         """Generate a single synthetic CT patch with a Gaussian-blurred nodule."""
         rng = np.random.RandomState(self._rng.randint(0, 2**31) + seed_offset)
         Z, Y, X = self.patch_size

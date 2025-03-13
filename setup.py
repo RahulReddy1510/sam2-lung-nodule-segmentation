@@ -6,15 +6,14 @@ SAM2 fine-tuning with temporal consistency and Monte Carlo Dropout.
 """
 
 from pathlib import Path
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 # Read requirements from requirements.txt
 _req_path = Path(__file__).parent / "requirements.txt"
 with open(_req_path, encoding="utf-8") as f:
     requirements = [
-        line.strip()
-        for line in f
-        if line.strip() and not line.startswith("#")
+        line.strip() for line in f if line.strip() and not line.startswith("#")
     ]
 
 # Read long description from README
@@ -75,8 +74,6 @@ setup(
         "Bug Reports": (
             "https://github.com/rahulkoulury/sam2-lung-nodule-segmentation/issues"
         ),
-        "Source": (
-            "https://github.com/rahulkoulury/sam2-lung-nodule-segmentation"
-        ),
+        "Source": ("https://github.com/rahulkoulury/sam2-lung-nodule-segmentation"),
     },
 )

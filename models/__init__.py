@@ -13,31 +13,31 @@ Quick start::
     from models.temporal_consistency import TemporalConsistencyLoss
 """
 
-from models.sam2_finetune import (
-    SAM2LungSegmentor,
-    FallbackEncoder,
-    LightweightMaskDecoder,
-    SinusoidalPosEmbed,
-    DropoutMultiheadAttention,
-    build_model,
-)
 from models.mc_dropout import (
+    compute_uncertainty_stats,
     enable_dropout_modules,
+    entropy_from_samples,
     mc_dropout_mode,
     mc_predict,
     mc_predict_volume,
-    entropy_from_samples,
-    compute_uncertainty_stats,
+)
+from models.registry import ModelRegistry, get_model
+from models.sam2_finetune import (
+    DropoutMultiheadAttention,
+    FallbackEncoder,
+    LightweightMaskDecoder,
+    SAM2LungSegmentor,
+    SinusoidalPosEmbed,
+    build_model,
 )
 from models.temporal_consistency import (
-    TemporalConsistencyLoss,
     AblationLossFactory,
+    TemporalConsistencyLoss,
+    dice_consistency,
     dice_loss,
     focal_bce_loss,
     l2_consistency,
-    dice_consistency,
 )
-from models.registry import ModelRegistry, get_model
 
 __all__ = [
     # Core model

@@ -1,0 +1,4 @@
+﻿data\augmentation.py: error: Source file found twice under different module names: "augmentation" and "data.augmentation"
+data\augmentation.py: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#mapping-file-paths-to-modules for more info
+data\augmentation.py: note: Common resolutions include: a) adding `__init__.py` somewhere, b) using `--explicit-package-bases` or adjusting MYPYPATH
+Found 1 error in 1 file (errors prevented further checking)

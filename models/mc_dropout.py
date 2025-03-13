@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
-from typing import Any, Dict, Generator, Tuple
+from typing import Dict, Generator, Tuple
 
 import torch
 import torch.nn as nn
@@ -183,8 +183,8 @@ def mc_predict(
     # Stack: (n_samples, B, 1, H, W)
     stacked = torch.cat(all_preds, dim=0)
 
-    mean_pred = stacked.mean(dim=0)          # (B, 1, H, W)
-    uncertainty = stacked.var(dim=0)         # (B, 1, H, W), unbiased=True (default)
+    mean_pred = stacked.mean(dim=0)  # (B, 1, H, W)
+    uncertainty = stacked.var(dim=0)  # (B, 1, H, W), unbiased=True (default)
 
     logger.debug(
         "mc_predict: n_samples=%d | mean range [%.4f, %.4f] | unc max=%.4f",
@@ -247,7 +247,9 @@ def mc_predict_volume(
     # Normalize input shape to (1, Z, H, W)
     if volume.ndim == 5 and volume.shape[0] == 1:
         volume = volume.squeeze(0)  # (1, Z, H, W)
-    assert volume.ndim == 4, f"Expected (1, Z, H, W) or (1, 1, Z, H, W), got {volume.shape}"
+    assert (
+        volume.ndim == 4
+    ), f"Expected (1, Z, H, W) or (1, 1, Z, H, W), got {volume.shape}"
     _, Z, H, W = volume.shape
 
     mean_slices: list[Tensor] = []
@@ -383,7 +385,7 @@ def compute_uncertainty_stats(
     if binary_gt is not None:
         gt = binary_gt.float().flatten()
         # Boundary = XOR between prediction and GT
-        boundary = (p.round() != gt.round())
+        boundary = p.round() != gt.round()
         if boundary.any():
             stats["unc_at_boundary"] = float(u[boundary].mean().item())
         else:
@@ -397,7 +399,6 @@ def compute_uncertainty_stats(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import torch
     from models.sam2_finetune import build_model
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
@@ -441,21 +442,31 @@ if __name__ == "__main__":
     binary_gt[:, :, H // 4 : 3 * H // 4, W // 4 : 3 * W // 4] = 1.0
 
     stats = compute_uncertainty_stats(uncertainty, binary_pred, binary_gt)
-    print(f"\n[Test 3] compute_uncertainty_stats")
+    print("\n[Test 3] compute_uncertainty_stats")
     for k, v in stats.items():
         print(f"  {k}: {v:.6f}")
     assert "unc_in_pred_mean" in stats and "unc_at_boundary" in stats
     print("  ✓ all expected keys present")
 
     # Test 4: mc_dropout_mode context manager
-    print(f"\n[Test 4] mc_dropout_mode context manager")
+    print("\n[Test 4] mc_dropout_mode context manager")
     model.eval()
     # Check that dropout layers are in eval before
-    n_train_before = sum(1 for m in model.modules() if "Dropout" in m.__class__.__name__ and m.training)
+    n_train_before = sum(
+        1 for m in model.modules() if "Dropout" in m.__class__.__name__ and m.training
+    )
     with mc_dropout_mode(model):
-        n_train_during = sum(1 for m in model.modules() if "Dropout" in m.__class__.__name__ and m.training)
-    n_train_after = sum(1 for m in model.modules() if "Dropout" in m.__class__.__name__ and m.training)
-    print(f"  Dropout modules in train mode: before={n_train_before}, during={n_train_during}, after={n_train_after}")
+        n_train_during = sum(
+            1
+            for m in model.modules()
+            if "Dropout" in m.__class__.__name__ and m.training
+        )
+    n_train_after = sum(
+        1 for m in model.modules() if "Dropout" in m.__class__.__name__ and m.training
+    )
+    print(
+        f"  Dropout modules in train mode: before={n_train_before}, during={n_train_during}, after={n_train_after}"
+    )
     assert n_train_during > 0, "Should have dropout active during mc_dropout_mode"
     print("  ✓ context manager correctly activates/restores dropout")
 

@@ -42,11 +42,11 @@ from torch.utils.data import DataLoader
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
 from data.dataset import build_dataset
-from models.registry import get_model
-from models.mc_dropout import mc_predict, compute_uncertainty_stats
 from evaluation.dice_metric import DiceMetric, compute_all_metrics
-from evaluation.uncertainty_calibration import CalibrationAnalyzer
 from evaluation.radiologist_agreement import RadiologistAgreement
+from evaluation.uncertainty_calibration import CalibrationAnalyzer
+from models.mc_dropout import compute_uncertainty_stats, mc_predict
+from models.registry import get_model
 
 logger = logging.getLogger(__name__)
 
@@ -109,20 +109,28 @@ def run_evaluation(
 
     logger.info(
         "Evaluating: %d batches | MC samples=%d | threshold=%.2f",
-        len(loader), n_mc_samples, threshold,
+        len(loader),
+        n_mc_samples,
+        threshold,
     )
 
     from tqdm import tqdm
+
     pbar = tqdm(loader, desc="Evaluating", unit="batch")
 
     for batch in pbar:
         images: Tensor = batch["image"].to(device, non_blocking=True)
         masks: Tensor = batch["mask"].to(device, non_blocking=True)
-        patch_ids: List[str] = batch["patch_id"] if isinstance(batch["patch_id"], list) else [batch["patch_id"]]
+        patch_ids: List[str] = (
+            batch["patch_id"]
+            if isinstance(batch["patch_id"], list)
+            else [batch["patch_id"]]
+        )
 
         # MC Dropout inference
         mean_pred, uncertainty = mc_predict(
-            model, images,
+            model,
+            images,
             n_samples=n_mc_samples,
             mc_batch_size=mc_batch_size,
             sigmoid=True,
@@ -169,8 +177,11 @@ def run_evaluation(
     ra_results: Dict = {}
     if radiologist_csv and Path(radiologist_csv).exists():
         ra_results = _run_radiologist_agreement(
-            radiologist_csv, per_case_rows,
-            save_ba_plot=str(Path(output_dir) / "bland_altman.png") if output_dir else None,
+            radiologist_csv,
+            per_case_rows,
+            save_ba_plot=(
+                str(Path(output_dir) / "bland_altman.png") if output_dir else None
+            ),
         )
 
     # Assemble full results
@@ -189,14 +200,21 @@ def run_evaluation(
         "brier": calib_results.get("brier"),
         "uncertainty_auc": calib_results.get("uncertainty_auc"),
         # Radiologist agreement
-        **{f"agreement_{k}": v for k, v in ra_results.items() if isinstance(v, (int, float, str))},
+        **{
+            f"agreement_{k}": v
+            for k, v in ra_results.items()
+            if isinstance(v, (int, float, str))
+        },
     }
 
     # Log summary
     logger.info(
         "Results: Dice=%.4f | IoU=%.4f | Prec=%.4f | Rec=%.4f | "
         "ECE=%.4f | Brier=%.4f | UncAUC=%.4f",
-        results["dice"], results["iou"], results["precision"], results["recall"],
+        results["dice"],
+        results["iou"],
+        results["precision"],
+        results["recall"],
         results.get("ece", float("nan")),
         results.get("brier", float("nan")),
         results.get("uncertainty_auc", float("nan")),
@@ -263,7 +281,9 @@ def _run_radiologist_agreement(
     if n_rads == 0:
         return {}
 
-    logger.info("RadiologistAgreement from CSV: %d studies, %d raters", len(study_data), n_rads)
+    logger.info(
+        "RadiologistAgreement from CSV: %d studies, %d raters", len(study_data), n_rads
+    )
 
     # Build model label lookup from per_case_rows
     model_lookup: Dict[str, int] = {}
@@ -381,7 +401,9 @@ def load_model_from_checkpoint(
     val_dice = ckpt.get("metrics", {}).get("val_dice", "?")
     logger.info(
         "Loaded checkpoint: epoch=%s | val_dice=%s | %s",
-        epoch, val_dice, checkpoint_path,
+        epoch,
+        val_dice,
+        checkpoint_path,
     )
     return model
 
@@ -402,10 +424,14 @@ Examples:
       --checkpoint runs/best_model.pt --output_dir results/ --n_mc 25
         """,
     )
-    p.add_argument("--data_dir", default="SYNTHETIC", help="Data directory or 'SYNTHETIC'")
+    p.add_argument(
+        "--data_dir", default="SYNTHETIC", help="Data directory or 'SYNTHETIC'"
+    )
     p.add_argument("--split", default="test", choices=["train", "val", "test"])
     p.add_argument("--checkpoint", default=None, help="Path to .pt checkpoint")
-    p.add_argument("--output_dir", default="results/eval", help="Output directory for reports")
+    p.add_argument(
+        "--output_dir", default="results/eval", help="Output directory for reports"
+    )
     p.add_argument("--n_mc", type=int, default=25, help="MC Dropout samples")
     p.add_argument("--mc_batch_size", type=int, default=5)
     p.add_argument("--batch_size", type=int, default=16)
@@ -443,7 +469,9 @@ def main() -> None:
     if args.checkpoint:
         model = load_model_from_checkpoint(args.checkpoint, device)
     else:
-        logger.warning("No checkpoint provided — using randomly initialised model (for smoke test)")
+        logger.warning(
+            "No checkpoint provided — using randomly initialised model (for smoke test)"
+        )
         model = get_model("sam2_lung_seg", encoder_frozen=False).to(device)
         model.eval()
 

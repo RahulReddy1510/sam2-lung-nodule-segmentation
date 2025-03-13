@@ -271,9 +271,7 @@ class TemporalConsistencyLoss(nn.Module):
             idx_t1 = int(slice_indices[i + 1].item())
             # Only penalise TRULY adjacent slices: |Δidx| == 1
             if abs(idx_t - idx_t1) == 1:
-                tc_losses.append(
-                    tc_fn(logits[i : i + 1], logits[i + 1 : i + 2])
-                )
+                tc_losses.append(tc_fn(logits[i : i + 1], logits[i + 1 : i + 2]))
 
         if len(tc_losses) == 0:
             # No adjacent pairs in this batch — return zero without a graph
@@ -313,11 +311,7 @@ class TemporalConsistencyLoss(nn.Module):
         )
 
         # Temporal consistency
-        if (
-            self._tc_active
-            and slice_indices is not None
-            and self.lambda_tc > 0
-        ):
+        if self._tc_active and slice_indices is not None and self.lambda_tc > 0:
             l_tc = self._compute_tc_loss(logits, slice_indices)
         else:
             l_tc = torch.tensor(0.0, device=logits.device)
@@ -385,7 +379,9 @@ class AblationLossFactory:
             )
         kwargs = dict(cls._VARIANTS[variant])
         kwargs.update(overrides)
-        logger.info("AblationLossFactory: creating variant=%r with kwargs=%s", variant, kwargs)
+        logger.info(
+            "AblationLossFactory: creating variant=%r with kwargs=%s", variant, kwargs
+        )
         return TemporalConsistencyLoss(**kwargs)
 
     @classmethod
@@ -420,18 +416,22 @@ if __name__ == "__main__":
     # --- Warmup phase (epoch 0 < warmup_epochs=5) ---
     criterion.set_epoch(0)
     losses_warmup = criterion(logits, targets, slice_indices)
-    print(f"\nEpoch  0 (warmup — TC inactive):")
-    print(f"  total={losses_warmup['total']:.4f} | dice={losses_warmup['dice']:.4f} | "
-          f"bce={losses_warmup['bce']:.4f} | temporal={losses_warmup['temporal']:.4f}")
+    print("\nEpoch  0 (warmup — TC inactive):")
+    print(
+        f"  total={losses_warmup['total']:.4f} | dice={losses_warmup['dice']:.4f} | "
+        f"bce={losses_warmup['bce']:.4f} | temporal={losses_warmup['temporal']:.4f}"
+    )
     assert losses_warmup["temporal"].item() == 0.0, "TC should be 0 during warmup"
     print("  ✓ temporal=0 during warmup")
 
     # --- Active phase (epoch 5 >= warmup_epochs=5) ---
     criterion.set_epoch(5)
     losses_active = criterion(logits, targets, slice_indices)
-    print(f"\nEpoch  5 (TC active — mode=l2):")
-    print(f"  total={losses_active['total']:.4f} | dice={losses_active['dice']:.4f} | "
-          f"bce={losses_active['bce']:.4f} | temporal={losses_active['temporal']:.4f}")
+    print("\nEpoch  5 (TC active — mode=l2):")
+    print(
+        f"  total={losses_active['total']:.4f} | dice={losses_active['dice']:.4f} | "
+        f"bce={losses_active['bce']:.4f} | temporal={losses_active['temporal']:.4f}"
+    )
     assert losses_active["temporal"].item() >= 0.0
     print("  ✓ temporal > 0 when TC active")
 

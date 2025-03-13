@@ -31,8 +31,10 @@ logger = logging.getLogger(__name__)
 # Optional matplotlib for plotting
 try:
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
     _MPL_AVAILABLE = True
 except ImportError:
     _MPL_AVAILABLE = False
@@ -145,6 +147,7 @@ def entropy_auc(
     """
     try:
         from sklearn.metrics import roc_auc_score
+
         if errors.sum() == 0 or errors.sum() == len(errors):
             return float("nan")
         return float(roc_auc_score(errors, uncertainty))
@@ -216,9 +219,23 @@ def reliability_diagram(
     fig.suptitle(title, fontsize=14, fontweight="bold")
 
     # Reliability diagram
-    ax1.bar(bin_centers, bin_accs, width=1.0 / n_bins, alpha=0.7, color="#4C72B0", label="Model accuracy")
-    ax1.bar(bin_centers, np.abs(bin_accs - bin_confs), width=1.0 / n_bins,
-            bottom=np.minimum(bin_accs, bin_confs), alpha=0.6, color="#DD8452", label="Gap")
+    ax1.bar(
+        bin_centers,
+        bin_accs,
+        width=1.0 / n_bins,
+        alpha=0.7,
+        color="#4C72B0",
+        label="Model accuracy",
+    )
+    ax1.bar(
+        bin_centers,
+        np.abs(bin_accs - bin_confs),
+        width=1.0 / n_bins,
+        bottom=np.minimum(bin_accs, bin_confs),
+        alpha=0.6,
+        color="#DD8452",
+        label="Gap",
+    )
     ax1.plot([0, 1], [0, 1], "k--", linewidth=1.5, label="Perfect calibration")
     ax1.set_xlabel("Mean confidence")
     ax1.set_ylabel("Mean accuracy")
@@ -302,7 +319,12 @@ class CalibrationAnalyzer:
         t_flat = target.float().flatten()[idx].cpu().numpy()
         u_flat = uncertainty.flatten()[idx].cpu().float().numpy()
         binary = (mean_pred >= threshold).float()
-        err_flat = (binary.flatten()[idx] != target.float().flatten()[idx]).cpu().numpy().astype(float)
+        err_flat = (
+            (binary.flatten()[idx] != target.float().flatten()[idx])
+            .cpu()
+            .numpy()
+            .astype(float)
+        )
 
         self._probs.append(p_flat)
         self._targets.append(t_flat)
@@ -329,20 +351,30 @@ class CalibrationAnalyzer:
             ``n_pixels``     : Total accumulated pixel count.
         """
         if not self._probs:
-            return {"ece": float("nan"), "brier": float("nan"), "uncertainty_auc": float("nan"), "n_pixels": 0.0}
+            return {
+                "ece": float("nan"),
+                "brier": float("nan"),
+                "uncertainty_auc": float("nan"),
+                "n_pixels": 0.0,
+            }
 
         probs = np.concatenate(self._probs)
         targets = np.concatenate(self._targets)
         uncertainties = np.concatenate(self._uncertainties)
         errors = np.concatenate(self._errors)
 
-        ece, bin_accs, bin_confs, bin_freqs = expected_calibration_error(probs, 1 - errors, self.n_bins)
+        ece, bin_accs, bin_confs, bin_freqs = expected_calibration_error(
+            probs, 1 - errors, self.n_bins
+        )
         bs = brier_score(probs, targets)
         unc_auc = entropy_auc(uncertainties, errors)
 
         if save_diagram:
             reliability_diagram(
-                bin_accs, bin_confs, bin_freqs, ece,
+                bin_accs,
+                bin_confs,
+                bin_freqs,
+                ece,
                 title="SAM2 Lung Nodule Seg — Calibration",
                 save_path=save_diagram,
             )
@@ -355,7 +387,10 @@ class CalibrationAnalyzer:
         }
         logger.info(
             "Calibration: ECE=%.4f | Brier=%.4f | UncAUC=%.4f | pixels=%d",
-            ece, bs, unc_auc, len(probs),
+            ece,
+            bs,
+            unc_auc,
+            len(probs),
         )
         return results
 
@@ -381,16 +416,18 @@ if __name__ == "__main__":
     N = 10_000
 
     # Simulate confident correct predictions
-    probs_correct = rng.beta(8, 2, N // 2)   # high confidence
+    probs_correct = rng.beta(8, 2, N // 2)  # high confidence
     targets_correct = np.ones(N // 2)
     # Simulate uncertain incorrect predictions
-    probs_wrong = rng.beta(2, 8, N // 2)     # low confidence
-    targets_wrong = np.ones(N // 2)          # actual label = 1, but model predicts ~0
+    probs_wrong = rng.beta(2, 8, N // 2)  # low confidence
+    targets_wrong = np.ones(N // 2)  # actual label = 1, but model predicts ~0
 
     probs_all = np.concatenate([probs_correct, probs_wrong])
     targets_all = np.concatenate([targets_correct, targets_wrong])
 
-    ece, bin_accs, bin_confs, bin_freqs = expected_calibration_error(probs_all, (probs_all >= 0.5).astype(float))
+    ece, bin_accs, bin_confs, bin_freqs = expected_calibration_error(
+        probs_all, (probs_all >= 0.5).astype(float)
+    )
     print(f"\nECE: {ece:.4f}")
 
     bs = brier_score(probs_all, targets_all)
@@ -405,7 +442,10 @@ if __name__ == "__main__":
     print(f"UncertaintyAUC: {auc:.4f}")
 
     reliability_diagram(
-        bin_accs, bin_confs, bin_freqs, ece,
+        bin_accs,
+        bin_confs,
+        bin_freqs,
+        ece,
         title="Demo Reliability Diagram",
         save_path="calibration_demo.png",
     )
@@ -420,7 +460,7 @@ if __name__ == "__main__":
         analyzer.update(mean_pred, uncertainty, target)
 
     results = analyzer.compute(save_diagram="calibration_test.png")
-    print(f"\nCalibrationAnalyzer results:")
+    print("\nCalibrationAnalyzer results:")
     for k, v in results.items():
         print(f"  {k}: {v:.4f}")
 

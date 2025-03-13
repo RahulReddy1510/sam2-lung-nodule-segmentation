@@ -1,0 +1,498 @@
+﻿============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\Rahul Reddy\Downloads\sam2-lung-nodule-segmentation
+plugins: cov-7.0.0
+collected 114 items
+
+tests\test_mc_dropout.py ........................F                       [ 21%]
+tests\test_metrics.py ..........................................         [ 58%]
+tests\test_model.py ..........................                           [ 81%]
+tests\test_preprocessing.py EFEEEEEEEEEE........E                        [100%]
+
+=================================== ERRORS ====================================
+_________ ERROR at setup of TestDatasetLoading.test_dataset_not_empty _________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+____________ ERROR at setup of TestDatasetLoading.test_sample_keys ____________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+____________ ERROR at setup of TestDatasetLoading.test_image_shape ____________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+_____ ERROR at setup of TestDatasetLoading.test_mask_shape_matches_image ______
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+_________ ERROR at setup of TestDatasetLoading.test_image_dtype_float _________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+_________ ERROR at setup of TestDatasetLoading.test_mask_dtype_float __________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+______ ERROR at setup of TestDatasetLoading.test_image_range_normalised _______
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+____________ ERROR at setup of TestDatasetLoading.test_mask_binary ____________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+___________ ERROR at setup of TestDataLoader.test_batch_image_shape ___________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+___________ ERROR at setup of TestDataLoader.test_batch_mask_shape ____________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+_________ ERROR at setup of TestDataLoader.test_full_epoch_iteration __________
+
+    @pytest.fixture(scope="module")
+    def train_dataset():
+        """Synthetic training dataset instance, module-scoped for speed."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24EB0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+___ ERROR at setup of TestAugmentation.test_augmented_dataset_len_unchanged ___
+
+    @pytest.fixture(scope="module")
+    def augmented_dataset():
+        """Synthetic training dataset with augmentations enabled."""
+        from data.dataset import build_dataset
+>       return build_dataset("SYNTHETIC", split="train", mode="slice", augment=True)
+
+tests\test_preprocessing.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x00000205410123B0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+================================== FAILURES ===================================
+___________ TestMCDropoutIntegration.test_full_eval_loop_synthetic ____________
+
+self = <tests.test_mc_dropout.TestMCDropoutIntegration object at 0x00000205100C8310>
+
+    def test_full_eval_loop_synthetic(self):
+        """Run a mini evaluation loop matching the pattern in evaluate.py."""
+        from models.registry import get_model
+        from models.mc_dropout import mc_predict
+        from data.dataset import build_dataset
+        from torch.utils.data import DataLoader
+        from evaluation.dice_metric import DiceMetric
+        from evaluation.uncertainty_calibration import CalibrationAnalyzer
+    
+        model = get_model("sam2_lung_seg",
+                          embed_dim=64, num_heads=4,
+                          attn_dropout=0.1, proj_dropout=0.1,
+                          encoder_frozen=True).eval()
+    
+>       ds = build_dataset("SYNTHETIC", split="test", mode="slice", augment=False)
+
+tests\test_mc_dropout.py:351: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x00000205102112D0>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+---------------------------- Captured stdout call -----------------------------
+[build_model] SAM2LungSegmentor | total=429,863 params | trainable=58,471 | SAM2=no (FallbackEncoder)
+___________ TestDatasetLoading.test_dataset_splits_non_overlapping ____________
+
+self = <tests.test_preprocessing.TestDatasetLoading object at 0x0000020510265B10>
+
+    def test_dataset_splits_non_overlapping(self):
+        """Train / val / test splits should be strictly non-overlapping."""
+        from data.dataset import build_dataset
+>       train = build_dataset("SYNTHETIC", split="train", mode="slice", augment=False)
+
+tests\test_preprocessing.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+data\dataset.py:398: in build_dataset
+    return SyntheticNoduleDataset(n_patches=n_patches, mode=mode, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <data.dataset.SyntheticNoduleDataset object at 0x0000020534C24E20>
+n_patches = 64, patch_size = (96, 96, 96), mode = 'slice', seed = 42
+
+    def __init__(
+        self,
+        n_patches: int = 64,
+        patch_size: Tuple[int, int, int] = (96, 96, 96),
+        mode: str = "slice",
+        seed: int = 42,
+    ) -> None:
+        assert mode in ("slice", "volume"), f"mode must be 'slice' or 'volume', got {mode}"
+        self.n_patches = n_patches
+        self.patch_size = patch_size
+        self.mode = mode
+>       self._rng = np.random.RandomState(seed)
+E       NameError: name 'np' is not defined
+
+data\dataset.py:304: NameError
+============================== warnings summary ===============================
+tests/test_mc_dropout.py::TestMCPredict::test_various_n_samples[1]
+  C:\Users\Rahul Reddy\Downloads\sam2-lung-nodule-segmentation\models\mc_dropout.py:187: UserWarning: var(): degrees of freedom is <= 0. Correction should be strictly less than the reduction factor (input numel divided by output numel). (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\aten\src\ATen\native\ReduceOps.cpp:1857.)
+    uncertainty = stacked.var(dim=0)         # (B, 1, H, W), unbiased=True (default)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_mc_dropout.py::TestMCDropoutIntegration::test_full_eval_loop_synthetic
+FAILED tests/test_preprocessing.py::TestDatasetLoading::test_dataset_splits_non_overlapping
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_dataset_not_empty
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_sample_keys - Nam...
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_image_shape - Nam...
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_mask_shape_matches_image
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_image_dtype_float
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_mask_dtype_float
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_image_range_normalised
+ERROR tests/test_preprocessing.py::TestDatasetLoading::test_mask_binary - Nam...
+ERROR tests/test_preprocessing.py::TestDataLoader::test_batch_image_shape - N...
+ERROR tests/test_preprocessing.py::TestDataLoader::test_batch_mask_shape - Na...
+ERROR tests/test_preprocessing.py::TestDataLoader::test_full_epoch_iteration
+ERROR tests/test_preprocessing.py::TestAugmentation::test_augmented_dataset_len_unchanged
+============ 2 failed, 100 passed, 1 warning, 12 errors in 25.25s =============

@@ -20,8 +20,6 @@ Run this file directly for a quick sanity check::
 from __future__ import annotations
 
 import logging
-import math
-import warnings
 from typing import Optional, Tuple
 
 import torch
@@ -103,13 +101,17 @@ class SinusoidalPosEmbed(nn.Module):
         x_enc = x_pos / dim_t  # (W, half_dim//2)
 
         # sin/cos interleaved for each axis
-        y_embed = torch.stack([y_enc.sin(), y_enc.cos()], dim=2).flatten(1)  # (H, half_dim)
-        x_embed = torch.stack([x_enc.sin(), x_enc.cos()], dim=2).flatten(1)  # (W, half_dim)
+        y_embed = torch.stack([y_enc.sin(), y_enc.cos()], dim=2).flatten(
+            1
+        )  # (H, half_dim)
+        x_embed = torch.stack([x_enc.sin(), x_enc.cos()], dim=2).flatten(
+            1
+        )  # (W, half_dim)
 
         # Combine: (H, W, embed_dim)
         pe = torch.zeros(H, W, self.embed_dim, device=device)
-        pe[:, :, : half_dim] = y_embed.unsqueeze(1).expand(H, W, half_dim)
-        pe[:, :, half_dim :] = x_embed.unsqueeze(0).expand(H, W, half_dim)
+        pe[:, :, :half_dim] = y_embed.unsqueeze(1).expand(H, W, half_dim)
+        pe[:, :, half_dim:] = x_embed.unsqueeze(0).expand(H, W, half_dim)
 
         # → (1, embed_dim, H, W)
         return pe.permute(2, 0, 1).unsqueeze(0)
@@ -277,7 +279,9 @@ class LightweightMaskDecoder(nn.Module):
             nn.ConvTranspose2d(embed_dim, embed_dim // 2, kernel_size=2, stride=2),
             nn.BatchNorm2d(embed_dim // 2),
             nn.GELU(),
-            nn.ConvTranspose2d(embed_dim // 2, num_output_masks, kernel_size=2, stride=2),
+            nn.ConvTranspose2d(
+                embed_dim // 2, num_output_masks, kernel_size=2, stride=2
+            ),
         )
 
     def forward(
@@ -694,7 +698,6 @@ def build_model(
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import sys
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 

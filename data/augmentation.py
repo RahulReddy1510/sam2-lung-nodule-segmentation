@@ -28,7 +28,7 @@ from __future__ import annotations
 import logging
 import math
 import random
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import torch
 import torch.nn.functional as F
@@ -170,13 +170,14 @@ class RandomZoom:
         sample = dict(sample)
         image = sample["image"]  # (1, H, W)
         mask = sample["mask"]  # (1, H, W)
-        H, W = image.shape[-2], image.shape[-1]
 
         # Build affine matrix for scaling (identity + scale)
         theta = torch.tensor(
             [[scale, 0.0, 0.0], [0.0, scale, 0.0]],
             dtype=torch.float32,
-        ).unsqueeze(0)  # (1, 2, 3)
+        ).unsqueeze(
+            0
+        )  # (1, 2, 3)
 
         # Upsample to 4D for grid_sample
         img_4d = image.unsqueeze(0)  # (1, 1, H, W)
@@ -364,7 +365,6 @@ def get_augmentation_pipeline(
 
 
 if __name__ == "__main__":
-    import numpy as np
 
     logging.basicConfig(level=logging.INFO)
 
@@ -398,7 +398,9 @@ if __name__ == "__main__":
         "patch_id": "demo_patch",
     }
 
-    print(f"Input  — image: {sample['image'].shape}, mask sum: {sample['mask'].sum():.0f}")
+    print(
+        f"Input  — image: {sample['image'].shape}, mask sum: {sample['mask'].sum():.0f}"
+    )
 
     for i in range(3):
         out = aug(sample)

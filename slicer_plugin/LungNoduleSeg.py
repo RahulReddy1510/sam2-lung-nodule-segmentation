@@ -24,7 +24,6 @@ Usage (from Python Interactor)::
 from __future__ import annotations
 
 import logging
-import os
 import sys
 import time
 import traceback
@@ -32,10 +31,10 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 import numpy as np
-import vtk
 
 # ── Slicer imports ────────────────────────────────────────────────────────
 import slicer
+import vtk
 from slicer.ScriptedLoadableModule import (
     ScriptedLoadableModule,
     ScriptedLoadableModuleLogic,
@@ -115,15 +114,17 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
         # Grab widget references (must match objectName in .ui)
         self.inputVolumeSelector = self.ui.findChild(object, "inputVolumeSelector")
-        self.outputSegSelector   = self.ui.findChild(object, "outputSegSelector")
-        self.uncertaintyVolSelector = self.ui.findChild(object, "uncertaintyVolSelector")
-        self.checkpointPathEdit  = self.ui.findChild(object, "checkpointPathEdit")
-        self.mcSamplesSpinBox    = self.ui.findChild(object, "mcSamplesSpinBox")
-        self.thresholdSpinBox    = self.ui.findChild(object, "thresholdSpinBox")
-        self.useGpuCheckBox      = self.ui.findChild(object, "useGpuCheckBox")
+        self.outputSegSelector = self.ui.findChild(object, "outputSegSelector")
+        self.uncertaintyVolSelector = self.ui.findChild(
+            object, "uncertaintyVolSelector"
+        )
+        self.checkpointPathEdit = self.ui.findChild(object, "checkpointPathEdit")
+        self.mcSamplesSpinBox = self.ui.findChild(object, "mcSamplesSpinBox")
+        self.thresholdSpinBox = self.ui.findChild(object, "thresholdSpinBox")
+        self.useGpuCheckBox = self.ui.findChild(object, "useGpuCheckBox")
         self.runSegmentationButton = self.ui.findChild(object, "runSegmentationButton")
-        self.progressBar         = self.ui.findChild(object, "progressBar")
-        self.resultsTextEdit     = self.ui.findChild(object, "resultsTextEdit")
+        self.progressBar = self.ui.findChild(object, "progressBar")
+        self.resultsTextEdit = self.ui.findChild(object, "resultsTextEdit")
 
         # Create logic
         self.logic = LungNoduleSegLogic()
@@ -159,13 +160,15 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             )
             return
 
-        checkpoint_path = self.checkpointPathEdit.currentPath if hasattr(
-            self.checkpointPathEdit, "currentPath"
-        ) else ""
-        n_mc      = self.mcSamplesSpinBox.value
+        checkpoint_path = (
+            self.checkpointPathEdit.currentPath
+            if hasattr(self.checkpointPathEdit, "currentPath")
+            else ""
+        )
+        n_mc = self.mcSamplesSpinBox.value
         threshold = self.thresholdSpinBox.value
-        use_gpu   = self.useGpuCheckBox.isChecked()
-        device    = "cuda" if (use_gpu and self._cuda_available()) else "cpu"
+        use_gpu = self.useGpuCheckBox.isChecked()
+        device = "cuda" if (use_gpu and self._cuda_available()) else "cpu"
 
         # Prepare output nodes
         out_seg_node = self.outputSegSelector.currentNode()
@@ -264,7 +267,9 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         vtk_array.SetName("LungNoduleSeg")
 
         image_data = vtk.vtkImageData()
-        image_data.SetDimensions(seg_array.shape[2], seg_array.shape[1], seg_array.shape[0])
+        image_data.SetDimensions(
+            seg_array.shape[2], seg_array.shape[1], seg_array.shape[0]
+        )
         image_data.GetPointData().SetScalars(vtk_array)
 
         out_node.SetAndObserveImageData(image_data)
@@ -315,9 +320,7 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
             if display_node is None:
                 unc_node.CreateDefaultDisplayNodes()
                 display_node = unc_node.GetDisplayNode()
-            display_node.SetAndObserveColorNodeID(
-                slicer.util.getNode("Heat1").GetID()
-            )
+            display_node.SetAndObserveColorNodeID(slicer.util.getNode("Heat1").GetID())
             display_node.AutoWindowLevelOn()
         except Exception as exc:
             logger.debug("Could not apply uncertainty colormap: %s", exc)
@@ -343,7 +346,7 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         volume_cm3 = volume_mm3 / 1000.0
 
         mean_unc = float(unc_array.mean())
-        max_unc  = float(unc_array.max())
+        max_unc = float(unc_array.max())
         confidence_pct = max(0.0, (1.0 - mean_unc)) * 100.0
 
         text = (
@@ -368,6 +371,7 @@ class LungNoduleSegWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
         """Return True if PyTorch finds a CUDA device."""
         try:
             import torch
+
             return torch.cuda.is_available()
         except ImportError:
             return False
@@ -441,7 +445,9 @@ class LungNoduleSegLogic(ScriptedLoadableModuleLogic):
 
         from models.registry import get_model
 
-        dev = torch.device(device if torch.cuda.is_available() or device == "cpu" else "cpu")
+        dev = torch.device(
+            device if torch.cuda.is_available() or device == "cpu" else "cpu"
+        )
 
         if checkpoint_path and Path(checkpoint_path).exists():
             ckpt = torch.load(checkpoint_path, map_location=dev)
@@ -461,7 +467,9 @@ class LungNoduleSegLogic(ScriptedLoadableModuleLogic):
             logger.info("Loaded checkpoint: epoch=%s val_dice=%s", epoch, val_dice)
         else:
             if checkpoint_path:
-                logger.warning("Checkpoint not found at %s — using random weights", checkpoint_path)
+                logger.warning(
+                    "Checkpoint not found at %s — using random weights", checkpoint_path
+                )
             model = get_model(
                 "sam2_lung_seg",
                 encoder_frozen=False,
@@ -503,38 +511,40 @@ class LungNoduleSegLogic(ScriptedLoadableModuleLogic):
             MC variance uncertainty map, shape (D, H, W), dtype float32.
         """
         if self._model is None:
-            raise RuntimeError(
-                "Model not loaded. Call load_model() before run()."
-            )
+            raise RuntimeError("Model not loaded. Call load_model() before run().")
 
         import torch
+
         from models.mc_dropout import mc_predict
 
         # Convert MRML volume → numpy array → torch tensor (D, H, W)
         volume_np = self._volume_to_numpy(input_volume_node)  # (D, H, W) float32
-        volume_np = self._apply_hu_window(volume_np)           # normalise → [0, 1]
+        volume_np = self._apply_hu_window(volume_np)  # normalise → [0, 1]
 
         D, H, W = volume_np.shape
         dev = torch.device(self._device)
 
-        seg_volume  = np.zeros((D, H, W), dtype=np.float32)
-        unc_volume  = np.zeros((D, H, W), dtype=np.float32)
+        seg_volume = np.zeros((D, H, W), dtype=np.float32)
+        unc_volume = np.zeros((D, H, W), dtype=np.float32)
 
         for z in range(D):
             # Shape: (1, 1, H, W)
             slice_np = volume_np[z : z + 1, :, :]
-            slice_t  = torch.from_numpy(slice_np).unsqueeze(0).unsqueeze(0).to(dev)
+            slice_t = torch.from_numpy(slice_np).unsqueeze(0).unsqueeze(0).to(dev)
 
             with torch.no_grad():
                 mean_pred, variance = mc_predict(
-                    self._model, slice_t,
+                    self._model,
+                    slice_t,
                     n_samples=n_mc,
                     mc_batch_size=min(n_mc, 5),
                     sigmoid=True,
                 )
 
-            seg_volume[z]  = (mean_pred.squeeze().cpu().numpy() >= threshold).astype(np.float32)
-            unc_volume[z]  = variance.squeeze().cpu().numpy()
+            seg_volume[z] = (mean_pred.squeeze().cpu().numpy() >= threshold).astype(
+                np.float32
+            )
+            unc_volume[z] = variance.squeeze().cpu().numpy()
 
             if progress_callback is not None:
                 progress_callback((z + 1) / D)
@@ -634,13 +644,17 @@ class LungNoduleSegTest(ScriptedLoadableModuleTest):
         W, H, D = 64, 64, 32
         synthetic = np.random.randn(D, H, W).astype(np.float32) * 200 - 500
 
-        vtk_array = nps.numpy_to_vtk(synthetic.flatten(), deep=True, array_type=vtk.VTK_FLOAT)
+        vtk_array = nps.numpy_to_vtk(
+            synthetic.flatten(), deep=True, array_type=vtk.VTK_FLOAT
+        )
         image_data = vtk.vtkImageData()
         image_data.SetDimensions(W, H, D)
         image_data.SetSpacing(1.0, 1.0, 1.0)
         image_data.GetPointData().SetScalars(vtk_array)
 
-        volume_node = slicer.mrmlScene.AddNewNodeByClass("vtkMRMLScalarVolumeNode", "SyntheticCT")
+        volume_node = slicer.mrmlScene.AddNewNodeByClass(
+            "vtkMRMLScalarVolumeNode", "SyntheticCT"
+        )
         volume_node.SetAndObserveImageData(image_data)
         volume_node.SetSpacing(1.0, 1.0, 1.0)
 
@@ -652,7 +666,7 @@ class LungNoduleSegTest(ScriptedLoadableModuleTest):
         seg, unc = logic.run(volume_node, n_mc=2, threshold=0.5)
 
         assert seg.shape == (D, H, W), f"Expected ({D},{H},{W}), got {seg.shape}"
-        assert unc.shape == (D, H, W), f"Uncertainty shape mismatch"
+        assert unc.shape == (D, H, W), "Uncertainty shape mismatch"
         assert seg.dtype == np.uint8, "Segmentation should be uint8"
         assert unc.dtype == np.float32, "Uncertainty should be float32"
         assert 0 <= seg.max() <= 1, "Segmentation values should be binary"

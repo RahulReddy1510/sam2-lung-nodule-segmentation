@@ -1,0 +1,21 @@
+[lint]
+# Configure Ruff to handle notebooks gracefully
+select = ["E", "F", "W", "I"]
+ignore = []
+
+[lint.per-file-ignores]
+# Ignore common notebook exploration patterns that trigger CI linting errors
+"*.ipynb" = [
+    "E401", # Multiple imports on one line
+    "E402", # Module level import not at top of file
+    "E702", # Multiple statements on one line (semicolon)
+    "F401", # Unused import
+    "F541", # f-string without placeholder
+    "F841", # Unused variable
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

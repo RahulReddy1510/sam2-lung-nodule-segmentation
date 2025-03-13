@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 import torch
 import torch.optim as optim
@@ -164,7 +164,10 @@ class PolynomialLR(sched.LRScheduler):
     def get_lr(self) -> List[float]:  # type: ignore[override]
         t = min(self.last_epoch, self.total_iters)
         factor = (1.0 - t / self.total_iters) ** self.power
-        return [self.eta_min + (base_lr - self.eta_min) * factor for base_lr in self.base_lrs]
+        return [
+            self.eta_min + (base_lr - self.eta_min) * factor
+            for base_lr in self.base_lrs
+        ]
 
 
 # ---------------------------------------------------------------------------
@@ -275,6 +278,7 @@ def get_lr(optimizer: optim.Optimizer) -> float:
 
 if __name__ == "__main__":
     import matplotlib
+
     matplotlib.use("Agg")  # headless
     import matplotlib.pyplot as plt
 
@@ -296,7 +300,12 @@ if __name__ == "__main__":
     configs_to_test = [
         {
             "name": "cosine_with_warmup",
-            "scheduler": {"name": "cosine_with_warmup", "warmup_epochs": 5, "T_max": 50, "eta_min": 1e-7},
+            "scheduler": {
+                "name": "cosine_with_warmup",
+                "warmup_epochs": 5,
+                "T_max": 50,
+                "eta_min": 1e-7,
+            },
             "training": {"epochs": EPOCHS},
         },
         {
@@ -306,12 +315,22 @@ if __name__ == "__main__":
         },
         {
             "name": "plateau (simulated)",
-            "scheduler": {"name": "plateau", "plateau_mode": "min", "plateau_patience": 5, "plateau_factor": 0.5},
+            "scheduler": {
+                "name": "plateau",
+                "plateau_mode": "min",
+                "plateau_patience": 5,
+                "plateau_factor": 0.5,
+            },
             "training": {"epochs": EPOCHS},
         },
         {
             "name": "poly",
-            "scheduler": {"name": "poly", "poly_total_iters": EPOCHS, "poly_power": 0.9, "eta_min": 1e-7},
+            "scheduler": {
+                "name": "poly",
+                "poly_total_iters": EPOCHS,
+                "poly_power": 0.9,
+                "eta_min": 1e-7,
+            },
             "training": {"epochs": EPOCHS},
         },
     ]
@@ -337,7 +356,9 @@ if __name__ == "__main__":
         ax.set_ylabel("LR")
         ax.set_yscale("log")
         ax.grid(True, alpha=0.3)
-        print(f"  [{cfg['name']}] LR[0]={lrs[0]:.2e}  LR[5]={lrs[5]:.2e}  LR[-1]={lrs[-1]:.2e}")
+        print(
+            f"  [{cfg['name']}] LR[0]={lrs[0]:.2e}  LR[5]={lrs[5]:.2e}  LR[-1]={lrs[-1]:.2e}"
+        )
 
     plt.tight_layout()
     plt.savefig("lr_schedules.png", dpi=120, bbox_inches="tight")
@@ -345,7 +366,9 @@ if __name__ == "__main__":
 
     # WarmupCosine: explicit assertions
     opt2 = _make_opt(BASE_LR)
-    wcs = WarmupCosineScheduler(opt2, warmup_epochs=5, T_max=50, warmup_start_lr=1e-7, eta_min=1e-7)
+    wcs = WarmupCosineScheduler(
+        opt2, warmup_epochs=5, T_max=50, warmup_start_lr=1e-7, eta_min=1e-7
+    )
     wcs_lrs = []
     for _ in range(50):
         wcs_lrs.append(get_lr(opt2))
